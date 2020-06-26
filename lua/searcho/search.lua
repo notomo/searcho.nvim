@@ -12,20 +12,21 @@ local get_keymap = function(bufnr, lhs)
   return nil
 end
 
-local set_keymap = function(lhs, rhs, bufnr)
-  local before = get_keymap(lhs)
+local set_keymap = function(keymap, bufnr)
+  local before = get_keymap(keymap.lhs)
 
   vim.api.nvim_buf_set_keymap(
     bufnr,
     mode,
-    lhs,
-    rhs,
+    keymap.lhs,
+    keymap.rhs,
     {
-      noremap = true
+      noremap = keymap.noremap,
+      expr = keymap.expr
     }
   )
 
-  local info = {lhs = lhs}
+  local info = {lhs = keymap.lhs}
   if before ~= nil then
     info.before = {
       rhs = before.rhs,
@@ -56,7 +57,7 @@ end
 M.next_page = function()
   local pattern = vim.fn.getcmdline()
   if pattern == "" then
-    return
+    return ""
   end
 
   local first_row = vim.fn.line("w0")
@@ -69,7 +70,7 @@ M.next_page = function()
   repeat
     local row, col = unpack(vim.fn.searchpos(pattern))
     if (current_row == row and current_col == col) or (before_row == row and before_col == col) then
-      return
+      return ""
     end
     before_row = row
     before_col = col
@@ -77,13 +78,13 @@ M.next_page = function()
   until row < first_row or last_row < row
 
   local ctrl_g = vim.api.nvim_eval('"\\<C-g>"')
-  vim.api.nvim_feedkeys((ctrl_g):rep(count), "t", false)
+  return (ctrl_g):rep(count)
 end
 
 M.prev_page = function()
   local pattern = vim.fn.getcmdline()
   if pattern == "" then
-    return
+    return ""
   end
 
   local first_row = vim.fn.line("w0")
@@ -96,7 +97,7 @@ M.prev_page = function()
   repeat
     local row, col = unpack(vim.fn.searchpos(pattern, "b"))
     if (current_row == row and current_col == col) or (before_row == row and before_col == col) then
-      return
+      return ""
     end
     before_row = row
     before_col = col
@@ -104,18 +105,31 @@ M.prev_page = function()
   until row < first_row or last_row < row
 
   local ctrl_t = vim.api.nvim_eval('"\\<C-t>"')
-  vim.api.nvim_feedkeys((ctrl_t):rep(count), "t", false)
+  return (ctrl_t):rep(count)
 end
+
+M.keymaps = {
+  {
+    lhs = "<C-n>",
+    rhs = "searcho#do('next_page')",
+    expr = true,
+    noremap = true
+  },
+  {
+    lhs = "<C-p>",
+    rhs = "searcho#do('prev_page')",
+    expr = true,
+    noremap = true
+  }
+}
 
 M.setup = function()
   local bufnr = vim.fn.bufnr("%")
 
-  -- TODO: enable to customize
-  local keymaps = {
-    set_keymap("<Space>", "<CR>", bufnr),
-    set_keymap("<C-n>", "<Cmd>call searcho#do('next_page')<CR>", bufnr),
-    set_keymap("<C-p>", "<Cmd>call searcho#do('prev_page')<CR>", bufnr)
-  }
+  local keymaps = {}
+  for _, keymap in ipairs(M.keymaps) do
+    table.insert(keymaps, set_keymap(keymap))
+  end
 
   local on_finished =
     ("autocmd CmdlineLeave <buffer=%s> ++once lua require('searcho/search').restore(%s)"):format(
