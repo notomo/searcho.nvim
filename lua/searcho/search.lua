@@ -1,6 +1,27 @@
 local M = {}
 
 local mode = "c"
+local large_scrolloff = 999
+
+local centering_cursor = function()
+  local prev_scrolloff = vim.wo.scrolloff
+  if prev_scrolloff == large_scrolloff then
+    return
+  elseif prev_scrolloff > large_scrolloff then
+    -- HACK: `vim.wo.scrolloff` should raise error if not set
+    prev_scrolloff = vim.o.scrolloff
+  end
+
+  vim.wo.scrolloff = large_scrolloff
+
+  local bufnr = vim.fn.bufnr("%")
+  local on_finished =
+    ("autocmd CmdlineLeave <buffer=%s> ++once lua require('searcho/search').restore_option(%s)"):format(
+    bufnr,
+    prev_scrolloff
+  )
+  vim.api.nvim_command(on_finished)
+end
 
 local get_keymap = function(bufnr, lhs)
   local keymaps = vim.api.nvim_buf_get_keymap(bufnr, mode)
@@ -44,6 +65,10 @@ local set_keymap = function(keymap, bufnr)
   return info
 end
 
+M.restore_option = function(scrolloff)
+  vim.wo.scrolloff = scrolloff
+end
+
 M.restore = function(keymaps)
   for _, keymap in ipairs(keymaps) do
     if keymap.before ~= nil then
@@ -77,6 +102,8 @@ M.next_page = function()
     count = count + 1
   until row < first_row or last_row < row
 
+  centering_cursor()
+
   local ctrl_g = vim.api.nvim_eval('"\\<C-g>"')
   return (ctrl_g):rep(count)
 end
@@ -103,6 +130,8 @@ M.prev_page = function()
     before_col = col
     count = count + 1
   until row < first_row or last_row < row
+
+  centering_cursor()
 
   local ctrl_t = vim.api.nvim_eval('"\\<C-t>"')
   return (ctrl_t):rep(count)
