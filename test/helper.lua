@@ -40,6 +40,12 @@ AM.current_line = function(expected)
   assert.equals(expected, actual, msg)
 end
 
+AM.column = function(expected)
+  local actual = vim.fn.col(".")
+  local msg = ("column should be %s, but actual: %s"):format(expected, actual)
+  assert.equals(expected, actual, msg)
+end
+
 M.assert = AM
 
 return M

@@ -205,6 +205,15 @@ M.backward = function()
   return "?"
 end
 
+M.adjust = function(input)
+  local line = vim.api.nvim_get_current_line()
+  local col = vim.fn.col(".")
+  if vim.startswith(line:sub(col), input) then
+    return input .. vim.api.nvim_eval('"\\<C-t>\\<C-g>"')
+  end
+  return input .. vim.api.nvim_eval('"\\<C-t>"')
+end
+
 M.next = function()
   M.reset_on_moved()
   local bufnr = vim.fn.bufnr("%")

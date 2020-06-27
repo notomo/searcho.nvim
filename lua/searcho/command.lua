@@ -9,6 +9,9 @@ local cmds = {
   backward = function()
     return search.backward()
   end,
+  adjust = function(input)
+    return search.adjust(input)
+  end,
   next = function()
     return search.next()
   end,
@@ -36,7 +39,8 @@ M.main = function(...)
     return vim.api.nvim_err_write("not found command: args=" .. vim.inspect(args) .. "\n")
   end
 
-  return cmd()
+  local cmd_args = {unpack(args, 2)}
+  return cmd(unpack(cmd_args))
 end
 
 return M
