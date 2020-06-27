@@ -14,3 +14,5 @@ else
         return s:do(a:000)
     endfunction
 endif
+
+doautocmd User SearchoSourceLoad
