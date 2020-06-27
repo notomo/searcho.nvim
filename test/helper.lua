@@ -36,7 +36,7 @@ local AM = {}
 
 AM.current_line = function(expected)
   local actual = vim.fn.getline(".")
-  local msg = string.format("current line should be %s, but actual: %s", expected, actual)
+  local msg = ("current line should be %s, but actual: %s"):format(expected, actual)
   assert.equals(expected, actual, msg)
 end
 

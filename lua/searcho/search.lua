@@ -69,7 +69,7 @@ M.restore_option = function(scrolloff)
   vim.wo.scrolloff = scrolloff
 end
 
-M.restore = function(keymaps)
+M.restore = function(keymaps, bufnr)
   for _, keymap in ipairs(keymaps) do
     if keymap.before ~= nil then
       vim.api.nvim_buf_set_keymap(mode, keymap.lhs, keymap.before.rhs, keymap.before.opts)
@@ -77,6 +77,20 @@ M.restore = function(keymaps)
       vim.api.nvim_buf_del_keymap(keymap.bufnr, mode, keymap.lhs)
     end
   end
+
+  local on_moved =
+    ("autocmd CursorMoved <buffer=%s> ++once autocmd CursorMoved <buffer=%s> ++once lua require('searcho/search').on_cursor_moved_after_end(%s)"):format(
+    bufnr,
+    bufnr,
+    bufnr
+  )
+  vim.api.nvim_command(on_moved)
+end
+
+vim.api.nvim_command("nnoremap <silent> <Plug>(_searcho-nohlsearch) <Cmd>nohlsearch<CR>")
+M.on_cursor_moved_after_end = function(_)
+  -- :h autocmd-searchpat
+  vim.api.nvim_input("<Plug>(_searcho-nohlsearch)")
 end
 
 M.next_page = function()
@@ -161,9 +175,10 @@ M.setup = function()
   end
 
   local on_finished =
-    ("autocmd CmdlineLeave <buffer=%s> ++once lua require('searcho/search').restore(%s)"):format(
+    ("autocmd CmdlineLeave <buffer=%s> ++once lua require('searcho/search').restore(%s, %s)"):format(
     bufnr,
-    vim.inspect(keymaps)
+    vim.inspect(keymaps),
+    bufnr
   )
   vim.api.nvim_command(on_finished)
 end

@@ -23,7 +23,7 @@ foo]])
 hoge
 
 foo]])
-command("normal! G")
+    command("normal! G")
 
     local cmd = vim.fn["searcho#do"]("backward") .. "hoge"
     command(cmd)
