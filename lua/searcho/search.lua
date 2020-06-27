@@ -77,14 +77,26 @@ M.restore = function(keymaps, bufnr)
       vim.api.nvim_buf_del_keymap(keymap.bufnr, mode, keymap.lhs)
     end
   end
+  M.setup_on_moved(bufnr)
+end
 
+local group_name = "SearchoGroup"
+
+M.setup_on_moved = function(bufnr)
+  vim.api.nvim_command(("augroup %s"):format(group_name))
   local on_moved =
-    ("autocmd CursorMoved <buffer=%s> ++once autocmd CursorMoved <buffer=%s> ++once lua require('searcho/search').on_cursor_moved_after_end(%s)"):format(
+    ("autocmd CursorMoved <buffer=%s> ++once autocmd %s CursorMoved <buffer=%s> ++once lua require('searcho/search').on_cursor_moved_after_end(%s)"):format(
     bufnr,
+    group_name,
     bufnr,
     bufnr
   )
   vim.api.nvim_command(on_moved)
+  vim.api.nvim_command("augroup END")
+end
+
+M.reset_on_moved = function()
+  vim.api.nvim_command(("autocmd! %s"):format(group_name))
 end
 
 vim.api.nvim_command("nnoremap <silent> <Plug>(_searcho-nohlsearch) <Cmd>nohlsearch<CR>")
@@ -191,6 +203,20 @@ end
 M.backward = function()
   M.setup()
   return "?"
+end
+
+M.next = function()
+  M.reset_on_moved()
+  local bufnr = vim.fn.bufnr("%")
+  M.setup_on_moved(bufnr)
+  return "n"
+end
+
+M.prev = function()
+  M.reset_on_moved()
+  local bufnr = vim.fn.bufnr("%")
+  M.setup_on_moved(bufnr)
+  return "N"
 end
 
 return M

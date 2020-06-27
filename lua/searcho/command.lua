@@ -9,6 +9,12 @@ local cmds = {
   backward = function()
     return search.backward()
   end,
+  next = function()
+    return search.next()
+  end,
+  prev = function()
+    return search.prev()
+  end,
   next_page = function()
     return search.next_page()
   end,
