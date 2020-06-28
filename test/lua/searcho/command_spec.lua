@@ -43,6 +43,11 @@ a]])
         lhs = "a",
         rhs = "b",
         noremap = true
+      },
+      {
+        lhs = "a",
+        rhs = "b",
+        noremap = true
       }
     }
 

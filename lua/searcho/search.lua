@@ -181,9 +181,15 @@ M.keymaps = {
 M.setup = function()
   local bufnr = vim.fn.bufnr("%")
 
-  local prev_keymaps = {}
+  -- make unique by lhs
+  local keymaps = {}
   for _, keymap in ipairs(M.keymaps) do
-    local prev = set_keymap(keymap)
+    keymaps[keymap.lhs] = keymap
+  end
+
+  local prev_keymaps = {}
+  for _, keymap in pairs(keymaps) do
+    local prev = set_keymap(keymap, bufnr)
     prev_keymaps[prev.lhs] = prev
   end
 
