@@ -34,7 +34,7 @@ local get_keymap = function(bufnr, lhs)
 end
 
 local set_keymap = function(keymap, bufnr)
-  local before = get_keymap(keymap.lhs)
+  local before = get_keymap(bufnr, keymap.lhs)
 
   vim.api.nvim_buf_set_keymap(
     bufnr,
@@ -52,12 +52,12 @@ local set_keymap = function(keymap, bufnr)
     info.before = {
       rhs = before.rhs,
       opts = {
-        nowait = before.nowait,
-        silent = before.silent,
-        expr = before.expr,
-        noremap = before.noremap,
-        script = before.script,
-        unique = before.unique
+        nowait = before.nowait == 1,
+        silent = before.silent == 1,
+        expr = before.expr == 1,
+        noremap = before.noremap == 1,
+        script = before.script == 1,
+        unique = before.unique == 1
       }
     }
   end
@@ -70,9 +70,9 @@ M.restore_option = function(scrolloff)
 end
 
 M.restore = function(keymaps, bufnr)
-  for _, keymap in ipairs(keymaps) do
+  for _, keymap in pairs(keymaps) do
     if keymap.before ~= nil then
-      vim.api.nvim_buf_set_keymap(mode, keymap.lhs, keymap.before.rhs, keymap.before.opts)
+      vim.api.nvim_buf_set_keymap(keymap.bufnr, mode, keymap.lhs, keymap.before.rhs, keymap.before.opts)
     else
       vim.api.nvim_buf_del_keymap(keymap.bufnr, mode, keymap.lhs)
     end
@@ -181,15 +181,16 @@ M.keymaps = {
 M.setup = function()
   local bufnr = vim.fn.bufnr("%")
 
-  local keymaps = {}
+  local prev_keymaps = {}
   for _, keymap in ipairs(M.keymaps) do
-    table.insert(keymaps, set_keymap(keymap))
+    local prev = set_keymap(keymap)
+    prev_keymaps[prev.lhs] = prev
   end
 
   local on_finished =
     ("autocmd CmdlineLeave <buffer=%s> ++once lua require('searcho/search').restore(%s, %s)"):format(
     bufnr,
-    vim.inspect(keymaps),
+    vim.inspect(prev_keymaps),
     bufnr
   )
   vim.api.nvim_command(on_finished)

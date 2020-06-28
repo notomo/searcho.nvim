@@ -31,4 +31,26 @@ foo]])
     assert.current_line("hoge")
   end)
 
+  it('can restore keymaps', function ()
+    helper.set_lines([[
+a
+a]])
+
+    command("cnoremap <buffer> a c")
+
+    require("searcho/search").keymaps = {
+      {
+        lhs = "a",
+        rhs = "b",
+        noremap = true
+      }
+    }
+
+    local cmd = vim.fn["searcho#do"]("forward") .. "a"
+    command(cmd)
+    command("doautocmd CmdlineLeave")
+
+    assert.has_keymap("a", "c")
+  end)
+
 end)

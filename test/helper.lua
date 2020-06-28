@@ -21,6 +21,8 @@ M.after_each = function()
 
   -- NOTE: for require("test.helper")
   vim.api.nvim_set_current_dir(M.root)
+
+  require("searcho/cleanup")("searcho")
 end
 
 M.set_lines = function(lines)
@@ -40,10 +42,14 @@ AM.current_line = function(expected)
   assert.equals(expected, actual, msg)
 end
 
-AM.column = function(expected)
-  local actual = vim.fn.col(".")
-  local msg = ("column should be %s, but actual: %s"):format(expected, actual)
-  assert.equals(expected, actual, msg)
+AM.has_keymap = function(lhs, rhs)
+  local keymaps = vim.api.nvim_buf_get_keymap(0, "c")
+  for _, keymap in ipairs(keymaps) do
+    if keymap.lhs == lhs and keymap.rhs == rhs then
+      return
+    end
+  end
+  assert(false, ("no keymap: lhs=%s rhs=%s"):format(lhs, rhs))
 end
 
 M.assert = AM
