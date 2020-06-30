@@ -99,10 +99,13 @@ M.reset_on_moved = function()
   vim.api.nvim_command(("autocmd! %s"):format(group_name))
 end
 
-vim.api.nvim_command("nnoremap <silent> <Plug>(_searcho-nohlsearch) <Cmd>nohlsearch<CR>")
 M.on_cursor_moved_after_end = function(_)
   -- :h autocmd-searchpat
-  vim.api.nvim_input("<Plug>(_searcho-nohlsearch)")
+  vim.schedule(
+    function()
+      vim.api.nvim_command("nohlsearch")
+    end
+  )
 end
 
 M.next_page = function()
