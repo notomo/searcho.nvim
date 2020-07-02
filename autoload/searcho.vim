@@ -1,7 +1,5 @@
 function! s:do(args) abort
-    let args = map(copy(a:args), { _, v -> printf('"%s"', v) })
-    let cmd = printf('require("searcho/command").main(%s)', join(args, ', '))
-    return luaeval(cmd)
+    return luaeval('require("searcho/command").main(unpack(_A))', a:args)
 endfunction
 
 if get(g:, 'searcho_debug', v:false)
