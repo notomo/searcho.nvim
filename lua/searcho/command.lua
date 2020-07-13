@@ -40,7 +40,14 @@ M.main = function(...)
   end
 
   local cmd_args = {unpack(args, 2)}
-  return cmd(unpack(cmd_args))
+  local f = function()
+    return cmd(unpack(cmd_args))
+  end
+  local ok, result = xpcall(f, debug.traceback)
+  if not ok then
+    error(result)
+  end
+  return result
 end
 
 return M
