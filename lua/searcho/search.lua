@@ -213,13 +213,34 @@ M.backward = function()
   return "?"
 end
 
-M.adjust = function(input)
+M.stay_forward = function()
   local line = vim.api.nvim_get_current_line()
   local col = vim.fn.col(".")
-  if vim.startswith(line:sub(col), input) then
-    return input .. vim.api.nvim_eval('"\\<C-t>\\<C-g>"')
+
+  M.setup()
+
+  local word, start_col, _ = unpack(vim.fn.matchstrpos(line, "\\v\\k*%" .. col .. "c\\k+"))
+  if word == "" then
+    return "/"
   end
-  return input .. vim.api.nvim_eval('"\\<C-t>"')
+
+  local left = vim.api.nvim_eval('"\\<Left>"')
+  return left:rep(col - start_col) .. "/"
+end
+
+M.stay_backward = function()
+  local line = vim.api.nvim_get_current_line()
+  local col = vim.fn.col(".")
+
+  M.setup()
+
+  local word, _, end_col = unpack(vim.fn.matchstrpos(line, "\\v\\k*%" .. col .. "c\\k+"))
+  if word == "" then
+    return "?"
+  end
+
+  local right = vim.api.nvim_eval('"\\<Right>"')
+  return right:rep(end_col - col) .. "?"
 end
 
 M.next = function()

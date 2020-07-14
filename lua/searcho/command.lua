@@ -9,8 +9,11 @@ local cmds = {
   backward = function()
     return search.backward()
   end,
-  adjust = function(input)
-    return search.adjust(input)
+  stay_forward = function()
+    return search.stay_forward()
+  end,
+  stay_backward = function()
+    return search.stay_backward()
   end,
   next = function()
     return search.next()
