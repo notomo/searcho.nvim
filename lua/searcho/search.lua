@@ -83,20 +83,18 @@ end
 local group_name = "SearchoGroup"
 
 M.setup_on_moved = function(bufnr)
-  vim.api.nvim_command(("augroup %s"):format(group_name))
+  local group = group_name .. bufnr
+  vim.api.nvim_command(("augroup %s"):format(group))
+  vim.api.nvim_command("autocmd!")
   local on_moved =
     ("autocmd CursorMoved <buffer=%s> ++once autocmd %s CursorMoved <buffer=%s> ++once lua require('searcho/search').on_cursor_moved_after_end(%s)"):format(
     bufnr,
-    group_name,
+    group,
     bufnr,
     bufnr
   )
   vim.api.nvim_command(on_moved)
   vim.api.nvim_command("augroup END")
-end
-
-M.reset_on_moved = function()
-  vim.api.nvim_command(("autocmd! %s"):format(group_name))
 end
 
 M.on_cursor_moved_after_end = function(_)
@@ -225,14 +223,12 @@ M.adjust = function(input)
 end
 
 M.next = function()
-  M.reset_on_moved()
   local bufnr = vim.fn.bufnr("%")
   M.setup_on_moved(bufnr)
   return "n"
 end
 
 M.prev = function()
-  M.reset_on_moved()
   local bufnr = vim.fn.bufnr("%")
   M.setup_on_moved(bufnr)
   return "N"
