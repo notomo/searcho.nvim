@@ -26,7 +26,7 @@ local cmds = {
   end,
   prev_page = function()
     return search.prev_page()
-  end
+  end,
 }
 
 M.main = function(...)
