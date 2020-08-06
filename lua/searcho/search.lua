@@ -169,7 +169,7 @@ M.setup = function()
     prev_keymaps[prev.lhs] = prev
   end
 
-  local on_finished = ("autocmd CmdlineLeave <buffer=%s> ++once lua require('searcho/search').restore(%s, %s)"):format(bufnr, vim.inspect(prev_keymaps), bufnr)
+  local on_finished = ("autocmd CmdlineLeave <buffer=%s> ++once lua require('searcho/search').restore(vim.fn.json_decode('%s'), %s)"):format(bufnr, vim.fn.escape(vim.fn.json_encode(prev_keymaps), "'\""), bufnr)
   vim.api.nvim_command(on_finished)
 end
 
