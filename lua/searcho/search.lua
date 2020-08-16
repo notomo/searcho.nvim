@@ -190,12 +190,15 @@ M.stay_forward = function()
   M.setup()
 
   local word, start_col, _ = unpack(vim.fn.matchstrpos(line, "\\v\\k*%" .. col .. "c\\k+"))
+  local offset = col - start_col
   if word == "" then
     return "/"
+  elseif vim.fn.line(".") == 1 and col <= offset then
+    return "G$/"
   end
 
   local left = vim.api.nvim_eval("\"\\<Left>\"")
-  return left:rep(col - start_col) .. "/"
+  return left:rep(offset) .. "/"
 end
 
 M.stay_backward = function()
@@ -205,12 +208,13 @@ M.stay_backward = function()
   M.setup()
 
   local word, _, end_col = unpack(vim.fn.matchstrpos(line, "\\v\\k*%" .. col .. "c\\k+"))
+  local offset = end_col - col
   if word == "" then
     return "?"
   end
 
   local right = vim.api.nvim_eval("\"\\<Right>\"")
-  return right:rep(end_col - col) .. "?"
+  return right:rep(offset) .. "?"
 end
 
 M.next = function()
