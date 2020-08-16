@@ -65,7 +65,7 @@ M.restore = function(keymaps, bufnr)
       vim.api.nvim_buf_set_keymap(keymap.bufnr, mode, keymap.lhs, keymap.before.rhs, keymap.before.opts)
     else
       local ok, err = pcall(vim.api.nvim_buf_del_keymap, keymap.bufnr, mode, keymap.lhs)
-      if not ok and vim.endswith(err, "No such mapping") then
+      if not ok and not vim.endswith(err, "No such mapping") then
         error(err)
       end
     end
