@@ -14,4 +14,10 @@ else
     endfunction
 endif
 
+" mapping util
+
+function! searcho#with_left(key) abort
+    return a:key .. repeat("\<Left>", strchars(a:key))
+endfunction
+
 doautocmd User SearchoSourceLoad
