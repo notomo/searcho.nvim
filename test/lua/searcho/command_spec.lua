@@ -1,5 +1,4 @@
-local helper = require "test.helper"
-local assert = helper.assert
+local helper = require("searcho/lib/testlib/helper")
 local command = helper.command
 
 describe("searcho", function()
