@@ -1,6 +1,6 @@
 local M = {}
 
-local root, err = require("searcho/lib/path").find_root("searcho.nvim")
+local root, err = require("searcho/lib/path").find_root("searcho/*.lua")
 if err ~= nil then
   error(err)
 end
