@@ -1,4 +1,5 @@
 local SearchDirection = require("searcho.core.search_direction").SearchDirection
+local SearchScroll = require("searcho.core.search_scroll").SearchScroll
 
 local M = {}
 
@@ -9,10 +10,6 @@ M.Origin = Origin
 function Origin.new(window_id)
   vim.validate({window_id = {window_id, "number"}})
 
-  local scrolloff = vim.api.nvim_win_call(window_id, function()
-    return tonumber(vim.api.nvim_exec("silent! echo &scrolloff", true))
-  end)
-
   local first_row, last_row
   vim.api.nvim_win_call(window_id, function()
     first_row = vim.fn.line("w0")
@@ -22,9 +19,9 @@ function Origin.new(window_id)
   local tbl = {
     position = vim.api.nvim_win_get_cursor(window_id),
     _window_id = window_id,
-    _scrolloff = scrolloff,
     _hlsearch = vim.v.hlsearch,
     _search_direction = SearchDirection.current(),
+    _search_scroll = SearchScroll.current(window_id),
     _register = vim.fn.getreg("/"),
     _first_row = first_row,
     _last_row = last_row,
@@ -46,9 +43,7 @@ function Origin.restore(self)
 end
 
 function Origin.restore_scrolloff(self)
-  vim.api.nvim_win_call(self._window_id, function()
-    vim.cmd("silent! noautocmd setlocal scrolloff=" .. tostring(self._scrolloff))
-  end)
+  self._search_scroll:set()
 end
 
 return M

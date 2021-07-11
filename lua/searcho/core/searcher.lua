@@ -3,6 +3,7 @@ local SearchResultFactory = require("searcho.core.search_result").SearchResultFa
 local SearchResult = require("searcho.core.search_result").SearchResult
 local SearchHighlight = require("searcho.core.search_highlight").SearchHighlight
 local SearchDirection = require("searcho.core.search_direction").SearchDirection
+local SearchScroll = require("searcho.core.search_scroll").SearchScroll
 local on_moved = require("searcho.core.on_moved")
 local cursorlib = require("searcho.lib.cursor")
 local vim = vim
@@ -30,6 +31,7 @@ function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_po
     _origin = origin,
     _adjust_pos = adjust_pos or origin.position,
     _search_direction = SearchDirection.new(is_forward),
+    _search_scroll = SearchScroll.new(window_id, 1000),
     _result_factory = SearchResultFactory.new(window_id, is_forward, accepted_cursor_position),
     _result = SearchResult.none(),
     _input = "",
@@ -149,9 +151,7 @@ function Searcher._centering_if_need(self, row)
   if self._origin:in_range(row) then
     return
   end
-  vim.api.nvim_win_call(self._window_id, function()
-    vim.cmd("silent! noautocmd setlocal scrolloff=1000")
-  end)
+  self._search_scroll:set()
 end
 
 function Searcher.next()
