@@ -1,9 +1,8 @@
-local HighlighterFactory = require("searcho.lib.highlight").HighlighterFactory
 local Origin = require("searcho.core.origin").Origin
 local SearchResultFactory = require("searcho.core.search_result").SearchResultFactory
 local SearchResult = require("searcho.core.search_result").SearchResult
+local SearchHighlight = require("searcho.core.search_highlight").SearchHighlight
 local on_moved = require("searcho.core.on_moved")
-local bufferlib = require("searcho.lib.buffer")
 local cursorlib = require("searcho.lib.cursor")
 local vim = vim
 
@@ -31,16 +30,13 @@ function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_po
   on_moved.disable()
 
   local origin = Origin.new(window_id)
-  local result_factory = SearchResultFactory.new(window_id, is_forward, accepted_cursor_position)
-  local bufnr = vim.api.nvim_win_get_buf(window_id)
   local tbl = {
     _window_id = window_id,
-    _hl_factory = HighlighterFactory.new("searcho", bufnr),
+    _highlight = SearchHighlight.new(window_id),
     _origin = origin,
-    _bufnr = bufnr,
     _adjust_pos = adjust_pos or origin.position,
     _searchforward = searchforward,
-    _result_factory = result_factory,
+    _result_factory = SearchResultFactory.new(window_id, is_forward, accepted_cursor_position),
     _result = SearchResult.none(),
     _input = "",
   }
@@ -75,9 +71,11 @@ end
 
 function Searcher.search(self, input)
   self._input = input
-  vim.cmd("let v:searchforward = " .. self._searchforward)
 
-  self:_restore()
+  vim.cmd("let v:searchforward = " .. self._searchforward)
+  vim.api.nvim_win_set_cursor(self._window_id, self._adjust_pos)
+  self._highlight:reset()
+
   local result = self._result_factory:create(input)
   return self:_update(result)
 end
@@ -127,7 +125,7 @@ function Searcher.previous_page(self)
 end
 
 function Searcher.finish(self)
-  self._hl_factory:reset()
+  self._highlight:reset_current_match()
   vim.cmd("let v:searchforward = " .. self._searchforward)
   self._origin:restore_scrolloff()
   on_moved.setup()
@@ -135,8 +133,7 @@ function Searcher.finish(self)
 end
 
 function Searcher.cancel(self)
-  vim.cmd("nohlsearch")
-  self._hl_factory:reset()
+  self._highlight:reset()
   self._origin:restore()
 end
 
@@ -145,36 +142,13 @@ function Searcher._update(self, result)
   if not result.matched then
     return
   end
-  self:_move_match()
-end
-
-function Searcher._move_match(self)
   local start_row, start_col = unpack(self._result.matched_start)
   local end_row, end_col = unpack(self._result.matched_end)
 
   self:_centering_if_need(start_row)
-
-  self:_highlight(self._input)
-  self:_highlight_current(start_row, start_col, end_row, end_col)
+  self._highlight:enable(self._input, start_row, start_col, end_row, end_col)
 
   vim.api.nvim_win_set_cursor(self._window_id, {start_row, start_col})
-end
-
-function Searcher._highlight(_, input)
-  -- HACK
-  if input == "\\v" then
-    return
-  end
-  vim.cmd("let &hlsearch = &hlsearch")
-end
-
-function Searcher._highlight_current(self, start_row, start_col, end_row, end_col)
-  local highlighter = self._hl_factory:reset()
-  local text = bufferlib.get_text(self._bufnr, start_row - 1, start_col, end_row - 1, end_col)
-  local strs = vim.split(text, "\n", true)
-  highlighter:add_ranged_virtual(strs, "IncSearch", start_row - 1, start_col - 1, end_row - 1, end_col - 1, {
-    virt_text_pos = "overlay",
-  })
 end
 
 function Searcher._centering_if_need(self, row)
@@ -184,12 +158,6 @@ function Searcher._centering_if_need(self, row)
   vim.api.nvim_win_call(self._window_id, function()
     vim.cmd("silent! noautocmd setlocal scrolloff=1000")
   end)
-end
-
-function Searcher._restore(self)
-  vim.api.nvim_win_set_cursor(self._window_id, self._adjust_pos)
-  vim.cmd("nohlsearch")
-  self._hl_factory:reset()
 end
 
 function Searcher.next()
