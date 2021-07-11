@@ -4,6 +4,7 @@ local SearchResult = require("searcho.core.search_result").SearchResult
 local SearchHighlight = require("searcho.core.search_highlight").SearchHighlight
 local SearchDirection = require("searcho.core.search_direction").SearchDirection
 local SearchScroll = require("searcho.core.search_scroll").SearchScroll
+local RowRange = require("searcho.core.row_range").RowRange
 local on_moved = require("searcho.core.on_moved")
 local cursorlib = require("searcho.lib.cursor")
 local vim = vim
@@ -148,8 +149,8 @@ function Searcher._update(self, result)
 end
 
 function Searcher._centering_if_need(self, row)
-  if self._origin:in_range(row) then
-    return
+  if RowRange.current(self._window_id):include(row) then
+    return self._origin:restore_scrolloff()
   end
   self._search_scroll:set()
 end

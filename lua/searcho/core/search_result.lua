@@ -85,10 +85,13 @@ function SearchResultFactory.match(self, row, col, next_cmd, prev_cmd, input)
 end
 
 function SearchResultFactory._matched_end(self, row, col, input)
+  local origin_row, origin_col = unpack(vim.api.nvim_win_get_cursor(self._window_id))
   cursorlib.left(self._window_id, row, col - 1) -- HACK: for `e` flag
   local end_row, end_col = unpack(vim.api.nvim_win_call(self._window_id, function()
     return vim.fn.searchpos(input, self._end_match_flag)
   end))
+  vim.api.nvim_win_set_cursor(self._window_id, {origin_row, origin_col})
+
   if input == "\\v" then -- HACK
     end_col = math.max(end_col - 1, 1)
   end

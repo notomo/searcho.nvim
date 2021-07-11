@@ -10,12 +10,6 @@ M.Origin = Origin
 function Origin.new(window_id)
   vim.validate({window_id = {window_id, "number"}})
 
-  local first_row, last_row
-  vim.api.nvim_win_call(window_id, function()
-    first_row = vim.fn.line("w0")
-    last_row = vim.fn.line("w$")
-  end)
-
   local tbl = {
     position = vim.api.nvim_win_get_cursor(window_id),
     _window_id = window_id,
@@ -23,14 +17,8 @@ function Origin.new(window_id)
     _search_direction = SearchDirection.current(),
     _search_scroll = SearchScroll.current(window_id),
     _register = vim.fn.getreg("/"),
-    _first_row = first_row,
-    _last_row = last_row,
   }
   return setmetatable(tbl, Origin)
-end
-
-function Origin.in_range(self, row)
-  return self._first_row <= row and row <= self._last_row
 end
 
 function Origin.restore(self)
