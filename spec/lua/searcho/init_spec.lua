@@ -237,6 +237,21 @@ target
     assert.equals(0, vim.wo.scrolloff)
   end)
 
+  it("adds old position to jumplist", function()
+    helper.set_lines([[
+target1
+
+target2
+]])
+    vim.cmd("normal! $")
+
+    searcho.forward("target")
+    searcho.finish()
+    vim.cmd("normal! " .. vim.api.nvim_eval("\"\\<C-o>\""))
+
+    assert.current_line("target1")
+  end)
+
 end)
 
 describe("searcho.next_match()", function()

@@ -124,6 +124,7 @@ end
 function Searcher.finish(self)
   self._highlight:reset_current_match()
   self._search_direction:set()
+  cursorlib.add_to_jumplist(self._window_id, self._origin.position)
   self._origin:restore_scrolloff()
   on_moved.setup()
   return self._result.err

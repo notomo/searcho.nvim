@@ -89,4 +89,13 @@ function M.previous_page_row(window_id)
   return first_row - 1
 end
 
+function M.add_to_jumplist(window_id, position)
+  local origin = vim.api.nvim_win_get_cursor(window_id)
+  vim.api.nvim_win_set_cursor(window_id, position)
+  vim.api.nvim_win_call(window_id, function()
+    vim.cmd("normal! m'")
+  end)
+  vim.api.nvim_win_set_cursor(window_id, origin)
+end
+
 return M
