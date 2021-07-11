@@ -1,56 +1,89 @@
-local search = require "searcho/search"
+local View = require("searcho.view").View
+local Searcher = require("searcho.core.searcher").Searcher
+local messagelib = require("searcho.lib.message")
 
 local M = {}
 
-local cmds = {
-  forward = function()
-    return search.forward()
-  end,
-  backward = function()
-    return search.backward()
-  end,
-  stay_forward = function()
-    return search.stay_forward()
-  end,
-  stay_backward = function()
-    return search.stay_backward()
-  end,
-  next = function()
-    return search.next()
-  end,
-  prev = function()
-    return search.prev()
-  end,
-  next_page = function()
-    return search.next_page()
-  end,
-  prev_page = function()
-    return search.prev_page()
-  end,
-}
+local Command = {}
+Command.__index = Command
+M.Command = Command
 
-M.main = function(...)
+function Command.new(name, ...)
   local args = {...}
-
-  local name = args[1]
-  if name == nil then
-    name = "forward"
-  end
-
-  local cmd = cmds[name]
-  if cmd == nil then
-    return vim.api.nvim_err_write("not found command: args=" .. vim.inspect(args) .. "\n")
-  end
-
-  local cmd_args = {unpack(args, 2)}
   local f = function()
-    return cmd(unpack(cmd_args))
+    return Command[name](unpack(args))
   end
-  local ok, result = xpcall(f, debug.traceback)
+
+  local ok, msg = xpcall(f, debug.traceback)
   if not ok then
-    error(result)
+    return messagelib.error(msg)
+  elseif msg then
+    return messagelib.warn(msg)
   end
-  return result
+end
+
+function Command.search(method_name, input)
+  return View.open_searcher(method_name, input)
+end
+
+function Command.search_word(method_name, opts)
+  vim.validate({opts = {opts, "table", true}})
+  opts = opts or {}
+  return View.open_word_searcher(method_name, opts.left, opts.right)
+end
+
+function Command.move_cursor(method_name)
+  local view = View.current()
+  if not view then
+    return "no state"
+  end
+  return view:move_cursor(method_name)
+end
+
+function Command.move_cursor_in_normal(method_name)
+  local err = Searcher[method_name]()
+  if err then
+    return err
+  end
+  return messagelib.raw_info(View.search_info())
+end
+
+function Command.finish()
+  local view = View.current()
+  if not view then
+    return "no state"
+  end
+  local err = view:finish()
+  if err then
+    return err
+  end
+  return messagelib.raw_info(View.search_info())
+end
+
+function Command.cancel()
+  local view = View.current()
+  if not view then
+    return
+  end
+  return view:cancel()
+end
+
+function Command.recall_history(offset)
+  vim.validate({offset = {offset, "number"}})
+  local view = View.current()
+  if not view then
+    return "no state"
+  end
+  view:recall_history(offset)
+end
+
+function Command.close(id)
+  vim.validate({id = {id, "number"}})
+  local view = View.get(id)
+  if not view then
+    return
+  end
+  view:cancel()
 end
 
 return M

@@ -1,57 +1,63 @@
-local M = {}
+local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
+local M = require("vusted.helper")
 
-local root, err = require("searcho/lib/path").find_root("searcho/*.lua")
-if err ~= nil then
-  error(err)
-end
-M.root = root
+M.root = M.find_plugin_root(plugin_name)
 
-M.command = function(cmd)
-  vim.api.nvim_command(cmd)
-end
-
-M.before_each = function()
-  M.command("filetype on")
-  M.command("syntax enable")
+function M.before_each()
+  vim.o.lines = 24
+  vim.o.columns = 80
+  vim.o.display = "lastline,msgsep" -- workaround for crash
+  vim.cmd("filetype on")
+  vim.cmd("syntax enable")
 end
 
-M.after_each = function()
-  M.command("tabedit")
-  M.command("tabonly!")
-  M.command("silent! %bwipeout!")
-  M.command("filetype off")
-  M.command("syntax off")
+function M.after_each()
+  vim.cmd("tabedit")
+  vim.cmd("tabonly!")
+  vim.cmd("silent! %bwipeout!")
+  vim.cmd("filetype off")
+  vim.cmd("syntax off")
+  vim.cmd("messages clear")
+  vim.fn.setreg("/", "")
+  vim.fn.histdel("/", "^\\*")
   print(" ")
 
   vim.api.nvim_set_current_dir(M.root)
 
-  require("searcho/cleanup")("searcho")
+  M.cleanup_loaded_modules(plugin_name)
 end
 
-M.set_lines = function(lines)
+function M.set_lines(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
 
-M.input_key = function(key)
-  M.command("normal " .. key)
+function M.input(str)
+  local texts = vim.split(str, "\n", true)
+  vim.api.nvim_put(texts, "", false, true)
 end
 
-local vassert = require("vusted.assert")
-local asserts = vassert.asserts
+function M.cursor_moved()
+  vim.cmd("doautocmd CursorMoved")
+end
+
+local asserts = require("vusted.assert").asserts
 
 asserts.create("current_line"):register_eq(function()
   return vim.fn.getline(".")
 end)
 
-asserts.create("has_keymap"):register(function(self)
+asserts.create("cursor_word"):register_eq(function()
+  return vim.fn.expand("<cword>")
+end)
+
+asserts.create("exists_message"):register(function(self)
   return function(_, args)
-    local lhs = args[1]
-    local rhs = args[2]
-    self:set_positive(("not found keymap lhs=%s rhs=%s"):format(lhs, rhs))
-    self:set_negative(("found keymap lhs=%s rhs=%s"):format(lhs, rhs))
-    local keymaps = vim.api.nvim_buf_get_keymap(0, "c")
-    for _, keymap in ipairs(keymaps) do
-      if keymap.lhs == lhs and keymap.rhs == rhs then
+    local expected = args[1]
+    self:set_positive(("`%s` not found message"):format(expected))
+    self:set_negative(("`%s` found message"):format(expected))
+    local messages = vim.split(vim.api.nvim_exec("messages", true), "\n")
+    for _, msg in ipairs(messages) do
+      if msg:find(expected, 1, true) then
         return true
       end
     end
