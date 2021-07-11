@@ -1,3 +1,4 @@
+local SearchDirection = require("searcho.core.search_direction").SearchDirection
 local cursorlib = require("searcho.lib.cursor")
 
 local M = {}
@@ -68,7 +69,7 @@ function SearchResultFactory.match(self, row, col, next_cmd, prev_cmd, input)
   vim.api.nvim_win_set_cursor(self._window_id, {row, col})
 
   vim.api.nvim_win_call(self._window_id, function()
-    if vim.v.searchforward == 1 then
+    if SearchDirection.current():is_forward() then
       return vim.cmd("silent! noautocmd keepjumps normal! " .. next_cmd)
     end
     vim.cmd("silent! noautocmd keepjumps normal! " .. prev_cmd)

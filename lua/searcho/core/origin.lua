@@ -1,3 +1,5 @@
+local SearchDirection = require("searcho.core.search_direction").SearchDirection
+
 local M = {}
 
 local Origin = {}
@@ -22,7 +24,7 @@ function Origin.new(window_id)
     _window_id = window_id,
     _scrolloff = scrolloff,
     _hlsearch = vim.v.hlsearch,
-    _searchforward = vim.v.searchforward,
+    _search_direction = SearchDirection.current(),
     _register = vim.fn.getreg("/"),
     _first_row = first_row,
     _last_row = last_row,
@@ -36,7 +38,7 @@ end
 
 function Origin.restore(self)
   vim.fn.setreg("/", self._register)
-  vim.cmd("let v:searchforward = " .. self._searchforward)
+  self._search_direction:set()
   self:restore_scrolloff()
 
   -- +1 for stopinsert

@@ -2,6 +2,7 @@ local Origin = require("searcho.core.origin").Origin
 local SearchResultFactory = require("searcho.core.search_result").SearchResultFactory
 local SearchResult = require("searcho.core.search_result").SearchResult
 local SearchHighlight = require("searcho.core.search_highlight").SearchHighlight
+local SearchDirection = require("searcho.core.search_direction").SearchDirection
 local on_moved = require("searcho.core.on_moved")
 local cursorlib = require("searcho.lib.cursor")
 local vim = vim
@@ -20,13 +21,6 @@ function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_po
     adjust_pos = {adjust_pos, "table", true},
   })
 
-  local searchforward
-  if is_forward then
-    searchforward = 1
-  else
-    searchforward = 0
-  end
-
   on_moved.disable()
 
   local origin = Origin.new(window_id)
@@ -35,7 +29,7 @@ function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_po
     _highlight = SearchHighlight.new(window_id),
     _origin = origin,
     _adjust_pos = adjust_pos or origin.position,
-    _searchforward = searchforward,
+    _search_direction = SearchDirection.new(is_forward),
     _result_factory = SearchResultFactory.new(window_id, is_forward, accepted_cursor_position),
     _result = SearchResult.none(),
     _input = "",
@@ -72,7 +66,7 @@ end
 function Searcher.search(self, input)
   self._input = input
 
-  vim.cmd("let v:searchforward = " .. self._searchforward)
+  self._search_direction:set()
   vim.api.nvim_win_set_cursor(self._window_id, self._adjust_pos)
   self._highlight:reset()
 
@@ -126,7 +120,7 @@ end
 
 function Searcher.finish(self)
   self._highlight:reset_current_match()
-  vim.cmd("let v:searchforward = " .. self._searchforward)
+  self._search_direction:set()
   self._origin:restore_scrolloff()
   on_moved.setup()
   return self._result.err
