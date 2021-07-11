@@ -24,6 +24,9 @@ function Inputter.new()
   if old ~= -1 then
     vim.api.nvim_buf_delete(old, {force = true})
   end
+  vim.api.nvim_buf_call(bufnr, function()
+    vim.api.nvim_exec(Inputter.key_mapping_script, false)
+  end)
   vim.api.nvim_buf_set_name(bufnr, "searcho://searcho")
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].filetype = "searcho"
@@ -51,7 +54,6 @@ function Inputter.open(self, callback, default_input, default_right_input)
     style = "minimal",
   })
   vim.api.nvim_echo({}, false, {}) -- NOTE: for clear command-line
-  vim.api.nvim_exec(Inputter.key_mapping_script, false)
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal,Search:None"
   vim.wo[window_id].signcolumn = "yes:1"
   self.window_id = window_id
