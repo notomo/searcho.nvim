@@ -39,6 +39,15 @@ target3]])
     searcho.forward("\\z")
   end)
 
+  it("can set key mapping by FileType autocmd", function()
+    vim.cmd([[autocmd FileType searcho ++once nnoremap <buffer> TEST <Cmd>lua vim.api.nvim_echo({{"key_mapping_test"}, {"\n"}}, true, {})<CR>]])
+
+    searcho.forward("")
+    vim.api.nvim_feedkeys("TEST", "x", true)
+
+    assert.exists_message("key_mapping_test")
+  end)
+
 end)
 
 describe("searcho.backward()", function()
