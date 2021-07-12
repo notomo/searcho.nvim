@@ -9,14 +9,12 @@ augroup END
 ]]):format(group_name))
 
 function M.setup()
-  vim.cmd(([[
-autocmd! %s CursorMoved <buffer>
-autocmd %s CursorMoved <buffer> ++once lua require("searcho.core.on_moved")._setup()
-]]):format(group_name, group_name))
+  M.disable()
+  vim.cmd(([[autocmd %s CursorMoved * ++once lua require("searcho.core.on_moved")._setup()]]):format(group_name))
 end
 
 function M.disable()
-  vim.cmd(([[autocmd! %s CursorMoved <buffer>]]):format(group_name))
+  vim.cmd(([[autocmd! %s CursorMoved]]):format(group_name))
 end
 
 function M.reset()
@@ -25,7 +23,7 @@ function M.reset()
 end
 
 function M._setup()
-  vim.cmd(([[autocmd %s CursorMoved <buffer> ++once lua require("searcho.core.on_moved")._disable_highlight()]]):format(group_name))
+  vim.cmd(([[autocmd %s CursorMoved * ++once lua require("searcho.core.on_moved")._disable_highlight()]]):format(group_name))
 end
 
 function M._disable_highlight()
