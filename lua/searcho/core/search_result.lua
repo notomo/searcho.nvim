@@ -39,6 +39,16 @@ function SearchResult.error(err)
   return SearchResult.new(nil, nil, err)
 end
 
+function SearchResult.is_last_char(self, last_col)
+  if not self.matched then
+    return false
+  end
+  if not (self.matched_start[1] == self.matched_end[1] and self.matched_start[2] == self.matched_end[2]) then
+    return false
+  end
+  return last_col == self.matched_end[2]
+end
+
 function SearchResultFactory.create(self, input)
   if input == "" then
     vim.fn.setreg("/", input)

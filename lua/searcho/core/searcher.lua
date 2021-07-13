@@ -121,6 +121,17 @@ function Searcher.previous_page(self)
   return self:_update(result)
 end
 
+function Searcher.adjust(self)
+  -- HACK: for stopinsert on last char
+  local last_col = vim.api.nvim_win_call(self._window_id, function()
+    return vim.fn.col("$") - 1
+  end)
+  if self._result:is_last_char(last_col) then
+    local row, col = unpack(vim.api.nvim_win_get_cursor(self._window_id))
+    vim.api.nvim_win_set_cursor(self._window_id, {row, col + 1})
+  end
+end
+
 function Searcher.finish(self)
   self._highlight:reset_current_match()
   self._search_direction:set()

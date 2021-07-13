@@ -53,6 +53,7 @@ function View.close(self)
 end
 
 function View.finish(self)
+  self._searcher:adjust()
   self._inputter:save_history()
   self:close()
   return self._searcher:finish()
