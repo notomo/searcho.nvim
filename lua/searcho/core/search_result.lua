@@ -59,7 +59,6 @@ function SearchResultFactory.create(self, input)
   vim.api.nvim_win_call(self._window_id, function()
     ok, result = pcall(vim.fn.searchpos, input, self._flag)
   end)
-
   if not ok then
     return SearchResult.error(result)
   end

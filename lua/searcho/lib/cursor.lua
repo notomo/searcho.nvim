@@ -32,11 +32,11 @@ function M.word_head_position(window_id)
   local suffix = vim.fn.matchstr(line, pattern)
   local width = vim.fn.strdisplaywidth(trim_intersection(word, suffix))
   local new_column = column - width
-  if new_column < 0 then
+  if new_column <= 0 then
     return {row, 0}
   end
 
-  return {row, new_column}
+  return {row, new_column - 1}
 end
 
 function M.to_left_by(window_id, str)
