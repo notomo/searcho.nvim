@@ -98,4 +98,9 @@ function M.add_to_jumplist(window_id, position)
   vim.api.nvim_win_set_cursor(window_id, origin)
 end
 
+function M.add_column(window_id)
+  local row, col = unpack(vim.api.nvim_win_get_cursor(window_id))
+  vim.api.nvim_win_set_cursor(window_id, {row, col + 1})
+end
+
 return M
