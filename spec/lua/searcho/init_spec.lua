@@ -39,6 +39,12 @@ target3]])
     searcho.forward("\\z")
   end)
 
+  it("ignores `search hit BOTTOM` error when search result is empty", function()
+    searcho.forward("target")
+
+    assert.no.exists_message("search hit BOTTOM, continuing at TOP")
+  end)
+
   it("can set key mapping by FileType autocmd", function()
     vim.cmd([[autocmd FileType searcho ++once nnoremap <buffer> TEST <Cmd>lua vim.api.nvim_echo({{"key_mapping_test"}, {"\n"}}, true, {})<CR>]])
 

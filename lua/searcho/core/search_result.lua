@@ -76,7 +76,7 @@ function SearchResultFactory._search(self, input)
   end
   local ok, err
   vim.api.nvim_win_call(self._window_id, function()
-    local cmd = ("noautocmd keepjumps normal! %s%s%s"):format(search, input, CR)
+    local cmd = ("silent noautocmd keepjumps normal! %s%s%s"):format(search, input, CR)
     ok, err = pcall(vim.cmd, cmd)
   end)
   if not ok then
