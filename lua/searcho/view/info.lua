@@ -22,8 +22,8 @@ function Info.show(self)
 end
 
 function Info._count()
-  local count = vim.fn.searchcount()
-  if vim.tbl_isempty(count) then
+  local ok, count = pcall(vim.fn.searchcount)
+  if not ok or vim.tbl_isempty(count) then
     return ""
   end
 

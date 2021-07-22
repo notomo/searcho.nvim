@@ -132,17 +132,18 @@ describe("searcho.backward_word()", function()
 
   it("stays in the cursor word", function()
     helper.set_lines([[
-target 1
+ target 1
 
-target 2
+ target 2
 
-target 3
+ target 3
 ]])
+    vim.cmd("normal! l")
 
     searcho.backward_word()
     searcho.finish()
 
-    assert.current_line("target 1")
+    assert.current_line(" target 1")
   end)
 
   it("searches a backward word", function()

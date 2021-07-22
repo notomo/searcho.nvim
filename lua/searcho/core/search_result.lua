@@ -17,7 +17,7 @@ function SearchResultFactory.new(window_id, is_forward, accepted_cursor_position
   end
   local end_match_flag = "e" .. flag:gsub("b", "")
 
-  local tbl = {_window_id = window_id, _flag = flag, _end_match_flag = end_match_flag}
+  local tbl = {_window_id = window_id, _is_forward = is_forward, _end_match_flag = end_match_flag}
   return setmetatable(tbl, SearchResultFactory)
 end
 
@@ -55,17 +55,9 @@ function SearchResultFactory.create(self, input)
     return SearchResult.none()
   end
 
-  local ok, result
-  vim.api.nvim_win_call(self._window_id, function()
-    ok, result = pcall(vim.fn.searchpos, input, self._flag)
-  end)
-  if not ok then
-    return SearchResult.error(result)
-  end
-
-  local row, col = unpack(result)
-  if row == 0 then
-    return SearchResult.none()
+  local row, col, err = self:_search(input)
+  if err then
+    return SearchResult.error(err)
   end
   vim.fn.setreg("/", input)
 
@@ -74,7 +66,33 @@ function SearchResultFactory.create(self, input)
   return SearchResult.new(s, e)
 end
 
+local CR = vim.api.nvim_eval([["\<CR>"]])
+function SearchResultFactory._search(self, input)
+  local origin_row, origin_col = unpack(vim.api.nvim_win_get_cursor(self._window_id))
+
+  local search = "/"
+  if not self._is_forward then
+    search = "?"
+  end
+  local ok, err
+  vim.api.nvim_win_call(self._window_id, function()
+    local cmd = ("noautocmd keepjumps normal! %s%s%s"):format(search, input, CR)
+    ok, err = pcall(vim.cmd, cmd)
+  end)
+  if not ok then
+    return nil, nil, err
+  end
+  vim.fn.histdel("search", -1)
+  vim.cmd("nohlsearch")
+
+  local row, column = unpack(vim.api.nvim_win_get_cursor(self._window_id))
+  vim.api.nvim_win_set_cursor(self._window_id, {origin_row, origin_col})
+  return row, column + 1, nil
+end
+
 function SearchResultFactory.match(self, row, col, next_cmd, prev_cmd, input)
+  local origin_row, origin_col = unpack(vim.api.nvim_win_get_cursor(self._window_id))
+
   vim.api.nvim_win_set_cursor(self._window_id, {row, col})
 
   vim.api.nvim_win_call(self._window_id, function()
@@ -90,6 +108,7 @@ function SearchResultFactory.match(self, row, col, next_cmd, prev_cmd, input)
 
   local s = {start_row, start_col}
   local e = self:_matched_end(start_row, start_col, input)
+  vim.api.nvim_win_set_cursor(self._window_id, {origin_row, origin_col})
   return SearchResult.new(s, e)
 end
 

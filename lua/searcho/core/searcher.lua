@@ -49,7 +49,8 @@ end
 function Searcher.forward_word(window_id)
   local is_forward = true
   local accepted_cursor_position = true
-  local adjust_pos = cursorlib.word_head_position(window_id)
+  local word_head_pos = cursorlib.word_head_position(window_id)
+  local adjust_pos = cursorlib.get_left(window_id, unpack(word_head_pos))
   return Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_pos)
 end
 
@@ -62,7 +63,7 @@ end
 function Searcher.backward_word(window_id)
   local is_forward = false
   local accepted_cursor_position = true
-  local adjust_pos = cursorlib.word_head_position(window_id)
+  local adjust_pos = cursorlib.word_tail_position(window_id)
   return Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_pos)
 end
 
