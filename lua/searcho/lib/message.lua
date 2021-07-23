@@ -23,18 +23,15 @@ function M.raw_info(msg)
   vim.api.nvim_echo({{msg}}, true, {})
 end
 
-function M.validate(tbl)
-  local errs = {}
-  for key, value in pairs(tbl) do
-    local ok, result = pcall(vim.validate, {[key] = value})
-    if not ok then
-      local msg_head = vim.split(result, "\n")[1]
-      table.insert(errs, ("%s: %s"):format(msg_head, vim.inspect(value[1])))
-    end
+function M.vim_warn(msg)
+  vim.validate({msg = {msg, "string"}})
+  local s, e = msg:find("Vim%(%S+%):")
+  if s then
+    msg = msg:sub(e + 1)
+  elseif vim.startswith(msg, "Vim:") then
+    msg = msg:sub(#("Vim:") + 1)
   end
-  if #errs ~= 0 then
-    return table.concat(errs, "\n")
-  end
+  M.warn(msg)
 end
 
 return M

@@ -18,7 +18,7 @@ function Command.new(name, ...)
   if not ok then
     return messagelib.error(msg)
   elseif msg then
-    return messagelib.warn(msg)
+    return messagelib.vim_warn(msg)
   end
 end
 

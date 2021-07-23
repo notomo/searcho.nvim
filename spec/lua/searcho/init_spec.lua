@@ -235,6 +235,13 @@ target
     assert.exists_message("(NFA) Unknown operator")
   end)
 
+  it("shows pattern not found error", function()
+    searcho.forward("not found")
+    searcho.finish()
+
+    assert.exists_message("E486: Pattern not found")
+  end)
+
   it("restores scrolloff", function()
     vim.o.display = "lastline" -- workaround for crash
     vim.o.lines = 5
