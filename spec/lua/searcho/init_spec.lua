@@ -39,6 +39,10 @@ target3]])
     searcho.forward("\\z")
   end)
 
+  it("does not raise error if input has slashes", function()
+    searcho.forward("\\v///")
+  end)
+
   it("ignores `search hit BOTTOM` error when search result is empty", function()
     searcho.forward("target")
 

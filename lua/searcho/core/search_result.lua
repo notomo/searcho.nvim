@@ -27,7 +27,7 @@ M.SearchResult = SearchResult
 
 function SearchResult.new(s, e, err)
   vim.validate({s = {s, "table", true}, e = {e, "table", true}, err = {err, "string", true}})
-  local tbl = {matched_start = s, matched_end = e, err = err, matched = s and e}
+  local tbl = {matched_start = s, matched_end = e, err = err, matched = (s and e) ~= nil}
   return setmetatable(tbl, SearchResult)
 end
 
@@ -76,7 +76,7 @@ function SearchResultFactory._search(self, input)
   end
   local ok, err
   vim.api.nvim_win_call(self._window_id, function()
-    local cmd = ("silent noautocmd keepjumps normal! %s%s%s"):format(search, input, CR)
+    local cmd = ("silent noautocmd keepjumps normal! %s%s%s"):format(search, vim.fn.escape(input, "/"), CR)
     ok, err = pcall(vim.cmd, cmd)
   end)
   if not ok then
