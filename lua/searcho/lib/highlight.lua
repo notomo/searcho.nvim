@@ -13,13 +13,12 @@ function Highlighter.add_virtual(self, chunks, row, start_col, opts)
   vim.api.nvim_buf_set_extmark(self._bufnr, self._ns, row, start_col, opts)
 end
 
-function Highlighter.add_ranged_virtual(self, strs, hl_group, start_row, start_col, end_row, end_col, opts)
+function Highlighter.add_ranged_virtual(self, strs, hl_group, start_row, start_col, opts)
   local args = {}
 
   local count = #strs
   if count == 1 then
-    local o = vim.tbl_extend("force", {end_line = end_row, end_col = end_col}, opts)
-    local arg = {{{strs[1], hl_group}}, start_row, start_col, o}
+    local arg = {{{strs[1], hl_group}}, start_row, start_col, opts}
     table.insert(args, arg)
   elseif count > 1 then
     local row = start_row
@@ -30,8 +29,6 @@ function Highlighter.add_ranged_virtual(self, strs, hl_group, start_row, start_c
       row = row + 1
     end
     args[1][3] = start_col
-    args[#args][4].end_col = end_col
-    args[#args][4].end_line = nil
   end
 
   for _, arg in ipairs(args) do
