@@ -86,6 +86,10 @@ function SearchResultFactory._search(self, input)
   vim.cmd("nohlsearch")
 
   local row, column = unpack(vim.api.nvim_win_get_cursor(self._window_id))
+  if input == "\\v\\n" or input == "\\n" then
+    -- HACK
+    column = column + 1
+  end
   vim.api.nvim_win_set_cursor(self._window_id, {origin_row, origin_col})
   return row, column + 1, nil
 end
@@ -107,6 +111,10 @@ function SearchResultFactory.match(self, row, col, next_cmd, prev_cmd, input)
   vim.api.nvim_win_set_cursor(self._window_id, {row, col})
 
   local s = {start_row, start_col}
+  if input == "\\v\\n" or input == "\\n" then
+    -- HACK
+    s[1] = s[1] + 1
+  end
   local e = self:_matched_end(start_row, start_col, input)
   vim.api.nvim_win_set_cursor(self._window_id, {origin_row, origin_col})
   return SearchResult.new(s, e)

@@ -30,6 +30,9 @@ function Highlighter.add_ranged_virtual(self, strs, hl_group, start_row, start_c
     args[1][3] = start_col
     args[#args][1][1][1] = strs[#strs]
   end
+  args = vim.tbl_filter(function(arg)
+    return arg[1][1][1] ~= ""
+  end, args)
 
   for _, arg in ipairs(args) do
     self:add_virtual(unpack(arg))
