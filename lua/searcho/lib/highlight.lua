@@ -18,14 +18,17 @@ function Highlighter.add_ranged_virtual(self, strs, hl_group, start_row, start_c
 
   local count = #strs
   if count == 1 then
-    table.insert(args, {{{strs[1], hl_group}}, start_row, start_col, opts})
+    local str = strs[1]
+    table.insert(args, {{{str, hl_group}}, start_row, start_col, opts})
   elseif count > 1 then
+    local eol = vim.opt.listchars:get().eol or ""
     local row = start_row
     for _, str in ipairs(strs) do
-      table.insert(args, {{{str, hl_group}}, row, 0, opts})
+      table.insert(args, {{{str .. eol, hl_group}}, row, 0, opts})
       row = row + 1
     end
     args[1][3] = start_col
+    args[#args][1][1][1] = strs[#strs]
   end
 
   for _, arg in ipairs(args) do
