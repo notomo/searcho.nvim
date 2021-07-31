@@ -67,7 +67,7 @@ function Searcher.backward_word(window_id)
   return Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_pos)
 end
 
-function Searcher.search(self, input)
+function Searcher.execute(self, input)
   self._input = input
 
   self._search_direction:set()

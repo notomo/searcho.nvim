@@ -22,7 +22,7 @@ function View.new(searcher_factory, input, right_input)
   local info = Info.new(inputter.bufnr, window_id)
 
   inputter:open(function(line)
-    searcher:search(line)
+    searcher:execute(line)
     info:show()
   end, input, right_input)
 
