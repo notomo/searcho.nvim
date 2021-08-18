@@ -19,6 +19,7 @@ function Info.show(self)
     return self:_count()
   end)
   highlighter:add_virtual({{msg, "Comment"}}, 0, 0, {})
+  return msg
 end
 
 function Info._count()

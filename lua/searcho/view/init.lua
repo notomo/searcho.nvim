@@ -1,6 +1,7 @@
 local repository = require("searcho.lib.repository").Repository.new("view")
 local Inputter = require("searcho.view.inputter").Inputter
 local Info = require("searcho.view.info").Info
+local SideInfo = require("searcho.view.side_info").SideInfo
 local Searcher = require("searcho.core.searcher").Searcher
 
 local M = {}
@@ -20,13 +21,15 @@ function View.new(searcher_factory, input, right_input)
   local searcher = searcher_factory(window_id)
   local inputter = Inputter.new()
   local info = Info.new(inputter.bufnr, window_id)
+  local side_info = SideInfo.new(window_id)
 
   inputter:open(function(line)
     searcher:execute(line)
-    info:show()
+    local msg = info:show()
+    side_info:show(msg)
   end, input, right_input)
 
-  local tbl = {_inputter = inputter, _searcher = searcher, _info = info}
+  local tbl = {_inputter = inputter, _searcher = searcher, _info = info, _side_info = side_info}
   local self = setmetatable(tbl, View)
 
   repository:set(inputter.window_id, self)
@@ -49,6 +52,7 @@ end
 function View.close(self)
   self._closed = true
   self._inputter:close()
+  self._side_info:clear()
   repository:delete(self._inputter.window_id)
 end
 
@@ -71,7 +75,8 @@ end
 
 function View.move_cursor(self, method_name)
   self._searcher[method_name](self._searcher)
-  self._info:show()
+  local msg = self._info:show()
+  self._side_info:show(msg)
 end
 
 function View.get(id)
