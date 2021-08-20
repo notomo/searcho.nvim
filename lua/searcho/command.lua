@@ -1,5 +1,4 @@
 local View = require("searcho.view").View
-local Searcher = require("searcho.core.searcher").Searcher
 local messagelib = require("searcho.lib.message")
 
 local M = {}
@@ -41,11 +40,11 @@ function Command.move_cursor(method_name)
 end
 
 function Command.move_cursor_in_normal(method_name)
-  local err = Searcher[method_name]()
+  local msg, err = View.move_cursor_in_normal(method_name)
   if err then
     return err
   end
-  return messagelib.raw_info(View.search_info())
+  return messagelib.raw_info(msg)
 end
 
 function Command.finish()

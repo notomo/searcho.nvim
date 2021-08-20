@@ -88,6 +88,14 @@ function View.current()
   return View.get(id)
 end
 
+function View.move_cursor_in_normal(method_name)
+  local err = Searcher[method_name]()
+  if err then
+    return nil, err
+  end
+  return View.search_info(), nil
+end
+
 function View.search_info()
   return Info.msg()
 end
