@@ -59,7 +59,17 @@ end
 function View.finish(self)
   self._inputter:save_history()
   self:close()
-  return self._searcher:finish()
+
+  local err = self._searcher:finish(function()
+    self._side_info:clear()
+  end)
+  if err then
+    return nil, err
+  end
+
+  local msg, count_msg = Info.msg()
+  self._side_info:show(count_msg)
+  return msg, nil
 end
 
 function View.cancel(self)
@@ -89,17 +99,18 @@ function View.current()
 end
 
 function View.move_cursor_in_normal(method_name)
-  local err = Searcher[method_name]()
+  local window_id = vim.api.nvim_get_current_win()
+  local side_info = SideInfo.new(window_id)
+  local err = Searcher[method_name](window_id, function()
+    side_info:clear()
+  end)
   if err then
     return nil, err
   end
 
-  local msg = View.search_info()
+  local msg, count_msg = Info.msg()
+  side_info:show(count_msg)
   return msg, nil
-end
-
-function View.search_info()
-  return Info.msg()
 end
 
 return M

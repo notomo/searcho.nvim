@@ -50,7 +50,8 @@ function Info.msg()
   else
     prefix = "?"
   end
-  return ("%s%s %s"):format(prefix, vim.fn.getreg("/"), Info._count())
+  local count_msg = Info._count()
+  return ("%s%s %s"):format(prefix, vim.fn.getreg("/"), count_msg), count_msg
 end
 
 return M

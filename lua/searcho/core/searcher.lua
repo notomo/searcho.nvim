@@ -6,6 +6,7 @@ local SearchDirection = require("searcho.core.search_direction").SearchDirection
 local SearchScroll = require("searcho.core.search_scroll").SearchScroll
 local RowRange = require("searcho.core.row_range").RowRange
 local CursorMovedCallback = require("searcho.core.cursor_moved_callback").CursorMovedCallback
+local BufferCursorMovedCallback = require("searcho.core.buffer_cursor_moved_callback").BufferCursorMovedCallback
 local cursorlib = require("searcho.lib.cursor")
 local vim = vim
 
@@ -124,7 +125,7 @@ function Searcher.previous_page(self)
   return self:_update(result)
 end
 
-function Searcher.finish(self)
+function Searcher.finish(self, callback)
   -- HACK: for stopinsert on last char
   local last_col = vim.api.nvim_win_call(self._window_id, function()
     return vim.fn.col("$") - 1
@@ -137,7 +138,13 @@ function Searcher.finish(self)
   self._search_direction:set()
   cursorlib.add_to_jumplist(self._window_id, self._origin.position)
   self._origin:restore_scrolloff()
+
   self._cursor_moved_callback:setup()
+
+  local bufnr = vim.api.nvim_win_get_buf(self._window_id)
+  local buffer_cursor_moved_callback = BufferCursorMovedCallback.new(bufnr, callback)
+  buffer_cursor_moved_callback:setup()
+
   return self._result.err
 end
 
@@ -167,26 +174,31 @@ function Searcher._centering_if_need(self, row)
   self._search_scroll:set()
 end
 
-function Searcher.next()
-  return Searcher._n_cmd("n")
+function Searcher.next(window_id, callback)
+  return Searcher._n_cmd(window_id, "n", callback)
 end
 
-function Searcher.previous()
-  return Searcher._n_cmd("N")
+function Searcher.previous(window_id, callback)
+  return Searcher._n_cmd(window_id, "N", callback)
 end
 
-function Searcher._n_cmd(n)
+function Searcher._n_cmd(window_id, n, callback)
   local cursor_moved_callback = CursorMovedCallback.new()
   cursor_moved_callback:setup()
 
-  local before_pos = vim.api.nvim_win_get_cursor(0)
+  local bufnr = vim.api.nvim_win_get_buf(window_id)
+  local buffer_cursor_moved_callback = BufferCursorMovedCallback.new(bufnr, callback)
+  buffer_cursor_moved_callback:setup()
+
+  local before_pos = vim.api.nvim_win_get_cursor(window_id)
   local ok, err = pcall(vim.cmd, "normal! " .. n)
   if not ok then
     return err
   end
-  local after_pos = vim.api.nvim_win_get_cursor(0)
+  local after_pos = vim.api.nvim_win_get_cursor(window_id)
   if before_pos[1] == after_pos[1] and before_pos[2] == after_pos[2] then
     cursor_moved_callback:reset()
+    buffer_cursor_moved_callback:reset()
   end
 end
 

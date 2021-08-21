@@ -525,6 +525,17 @@ target2
     assert.exists_message("/target [2/2]")
   end)
 
+  it("does not raise error on buf leave", function()
+    helper.set_lines([[
+target
+]])
+    searcho.forward("target")
+    searcho.finish()
+
+    searcho.next()
+    vim.cmd("tabedit")
+  end)
+
 end)
 
 describe("searcho.previous()", function()

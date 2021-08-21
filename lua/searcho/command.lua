@@ -52,11 +52,11 @@ function Command.finish()
   if not view then
     return "no state"
   end
-  local err = view:finish()
+  local msg, err = view:finish()
   if err then
     return err
   end
-  return messagelib.raw_info(View.search_info())
+  return messagelib.raw_info(msg)
 end
 
 function Command.cancel()
