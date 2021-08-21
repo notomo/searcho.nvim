@@ -5,7 +5,7 @@ local SearchHighlight = require("searcho.core.search_highlight").SearchHighlight
 local SearchDirection = require("searcho.core.search_direction").SearchDirection
 local SearchScroll = require("searcho.core.search_scroll").SearchScroll
 local RowRange = require("searcho.core.row_range").RowRange
-local on_moved = require("searcho.core.on_moved")
+local CursorMovedCallback = require("searcho.core.cursor_moved_callback").CursorMovedCallback
 local cursorlib = require("searcho.lib.cursor")
 local vim = vim
 
@@ -23,7 +23,8 @@ function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_po
     adjust_pos = {adjust_pos, "table", true},
   })
 
-  on_moved.disable()
+  local cursor_moved_callback = CursorMovedCallback.new()
+  cursor_moved_callback:disable()
 
   local origin = Origin.new(window_id)
   local tbl = {
@@ -36,6 +37,7 @@ function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_po
     _result_factory = SearchResultFactory.new(window_id, is_forward, accepted_cursor_position),
     _result = SearchResult.none(),
     _input = "",
+    _cursor_moved_callback = cursor_moved_callback,
   }
   return setmetatable(tbl, Searcher)
 end
@@ -82,7 +84,7 @@ function Searcher.next_match(self)
   if not self._result.matched then
     return
   end
-  on_moved.setup()
+  self._cursor_moved_callback:setup()
 
   local row, col = unpack(self._result.matched_end)
   local result = self._result_factory:match(row, col, "n", "N", self._input)
@@ -93,7 +95,7 @@ function Searcher.previous_match(self)
   if not self._result.matched then
     return
   end
-  on_moved.setup()
+  self._cursor_moved_callback:setup()
 
   local row, col = unpack(self._result.matched_start)
   local result = self._result_factory:match(row, col, "2N", "n", self._input)
@@ -104,7 +106,7 @@ function Searcher.next_page(self)
   if not self._result.matched then
     return
   end
-  on_moved.setup()
+  self._cursor_moved_callback:setup()
 
   local row, col = unpack({cursorlib.next_page_row(self._window_id), 0})
   local result = self._result_factory:match(row, col, "n", "2N", self._input)
@@ -115,7 +117,7 @@ function Searcher.previous_page(self)
   if not self._result.matched then
     return
   end
-  on_moved.setup()
+  self._cursor_moved_callback:setup()
 
   local row, col = unpack({cursorlib.previous_page_row(self._window_id), 0})
   local result = self._result_factory:match(row, col, "N", "2n", self._input)
@@ -135,7 +137,7 @@ function Searcher.finish(self)
   self._search_direction:set()
   cursorlib.add_to_jumplist(self._window_id, self._origin.position)
   self._origin:restore_scrolloff()
-  on_moved.setup()
+  self._cursor_moved_callback:setup()
   return self._result.err
 end
 
@@ -174,7 +176,9 @@ function Searcher.previous()
 end
 
 function Searcher._n_cmd(n)
-  on_moved.setup()
+  local cursor_moved_callback = CursorMovedCallback.new()
+  cursor_moved_callback:setup()
+
   local before_pos = vim.api.nvim_win_get_cursor(0)
   local ok, err = pcall(vim.cmd, "normal! " .. n)
   if not ok then
@@ -182,7 +186,7 @@ function Searcher._n_cmd(n)
   end
   local after_pos = vim.api.nvim_win_get_cursor(0)
   if before_pos[1] == after_pos[1] and before_pos[2] == after_pos[2] then
-    on_moved.reset()
+    cursor_moved_callback:reset()
   end
 end
 

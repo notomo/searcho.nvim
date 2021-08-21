@@ -93,7 +93,9 @@ function View.move_cursor_in_normal(method_name)
   if err then
     return nil, err
   end
-  return View.search_info(), nil
+
+  local msg = View.search_info()
+  return msg, nil
 end
 
 function View.search_info()
