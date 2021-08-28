@@ -18,6 +18,9 @@ end
 
 function SideInfo.show(self, msg)
   local highlighter = self._hl_factory:reset()
+  if msg == "[0/0]" then
+    return
+  end
   local cursor = vim.api.nvim_win_get_cursor(self._window_id)
   highlighter:add_virtual({{" " .. msg, "Comment"}}, cursor[1] - 1, 0, {})
 end
