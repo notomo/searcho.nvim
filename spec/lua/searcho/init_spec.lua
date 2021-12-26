@@ -209,7 +209,7 @@ target
     searcho.forward("target")
     searcho.cancel()
 
-    assert.equals(0, vim.wo.scrolloff)
+    assert.equals(0, vim.o.scrolloff)
   end)
 
 end)
@@ -261,7 +261,7 @@ target
     searcho.forward("target")
     searcho.finish()
 
-    assert.equals(0, vim.wo.scrolloff)
+    assert.equals(0, vim.o.scrolloff)
   end)
 
   it("adds old position to jumplist", function()

@@ -12,14 +12,14 @@ end
 
 function SearchScroll.current(window_id)
   local scrolloff = vim.api.nvim_win_call(window_id, function()
-    return tonumber(vim.api.nvim_exec("silent! echo &scrolloff", true))
+    return vim.api.nvim_get_option_value("scrolloff", {scope = "local"})
   end)
   return SearchScroll.new(window_id, scrolloff)
 end
 
 function SearchScroll.set(self)
   vim.api.nvim_win_call(self._window_id, function()
-    vim.cmd("silent! noautocmd setlocal scrolloff=" .. tostring(self._scrolloff))
+    vim.api.nvim_set_option_value("scrolloff", self._scrolloff, {scope = "local"})
   end)
 end
 
