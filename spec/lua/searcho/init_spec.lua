@@ -626,3 +626,24 @@ foo
   end)
 
 end)
+
+describe("searcho buffer name", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("is the same with default scratch buffer name", function()
+    searcho.forward("target")
+
+    assert.buffer_name("searcho://[Scratch]")
+  end)
+
+  it("suffix is the same with origin buffer name", function()
+    vim.api.nvim_buf_set_name(0, "test_buffer_name.lua")
+
+    searcho.forward("target")
+
+    assert.buffer_name("searcho://" .. helper.root .. "/test_buffer_name.lua")
+  end)
+
+end)

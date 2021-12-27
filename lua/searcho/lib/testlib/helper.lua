@@ -46,6 +46,10 @@ asserts.create("current_line"):register_eq(function()
   return vim.fn.getline(".")
 end)
 
+asserts.create("buffer_name"):register_eq(function()
+  return vim.fn.bufname("%")
+end)
+
 asserts.create("cursor_word"):register_eq(function()
   return vim.fn.expand("<cword>")
 end)

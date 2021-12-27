@@ -18,8 +18,9 @@ function View.new(searcher_factory, input, right_input)
   })
 
   local window_id = vim.api.nvim_get_current_win()
+  local bufnr = vim.api.nvim_get_current_buf()
   local searcher = searcher_factory(window_id)
-  local inputter = Inputter.new()
+  local inputter = Inputter.new(bufnr)
   local info = Info.new(inputter.bufnr, window_id)
   local side_info = SideInfo.new(window_id)
 

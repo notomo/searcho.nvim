@@ -16,10 +16,14 @@ inoremap <buffer> <C-n> <Cmd>lua require("searcho").forward_history()<CR>
 inoremap <buffer> <C-p> <Cmd>lua require("searcho").backward_history()<CR>
 ]]
 
-function Inputter.new()
+function Inputter.new(origin_bufnr)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
-  local name = "searcho://searcho"
+  local origin_name = vim.api.nvim_buf_get_name(origin_bufnr)
+  if origin_name == "" then
+    origin_name = "[Scratch]"
+  end
+  local name = "searcho://" .. origin_name
   local old = vim.fn.bufnr(("^%s$"):format(name))
   if old ~= -1 then
     vim.api.nvim_buf_delete(old, {force = true})
@@ -27,7 +31,7 @@ function Inputter.new()
   vim.api.nvim_buf_call(bufnr, function()
     vim.api.nvim_exec(Inputter.key_mapping_script, false)
   end)
-  vim.api.nvim_buf_set_name(bufnr, "searcho://searcho")
+  vim.api.nvim_buf_set_name(bufnr, name)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].filetype = "searcho"
 
