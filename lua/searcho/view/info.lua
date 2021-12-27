@@ -25,7 +25,7 @@ end
 function Info._count()
   local ok, count = pcall(vim.fn.searchcount)
   if not ok or vim.tbl_isempty(count) then
-    return ""
+    return "[0/0]"
   end
 
   if count.incomplete == 1 then
@@ -40,7 +40,7 @@ function Info._count()
     return ("[%d/>%d]"):format(count.current, count.total)
   end
 
-  return ""
+  return "[0/0]"
 end
 
 function Info.msg()
