@@ -12,9 +12,9 @@ M.View = View
 
 function View.new(searcher_factory, input, right_input)
   vim.validate({
-    searcher_factory = {searcher_factory, "function"},
-    input = {input, "string", true},
-    right_input = {right_input, "string", true},
+    searcher_factory = { searcher_factory, "function" },
+    input = { input, "string", true },
+    right_input = { right_input, "string", true },
   })
 
   local window_id = vim.api.nvim_get_current_win()
@@ -30,7 +30,7 @@ function View.new(searcher_factory, input, right_input)
     side_info:show(msg)
   end, input, right_input)
 
-  local tbl = {_inputter = inputter, _searcher = searcher, _info = info, _side_info = side_info}
+  local tbl = { _inputter = inputter, _searcher = searcher, _info = info, _side_info = side_info }
   local self = setmetatable(tbl, View)
 
   repository:set(inputter.window_id, self)

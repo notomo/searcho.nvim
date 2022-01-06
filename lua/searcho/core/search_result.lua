@@ -17,7 +17,7 @@ function SearchResultFactory.new(window_id, is_forward, accepted_cursor_position
   end
   local end_match_flag = "e" .. flag:gsub("b", "")
 
-  local tbl = {_window_id = window_id, _is_forward = is_forward, _end_match_flag = end_match_flag}
+  local tbl = { _window_id = window_id, _is_forward = is_forward, _end_match_flag = end_match_flag }
   return setmetatable(tbl, SearchResultFactory)
 end
 
@@ -26,8 +26,8 @@ SearchResult.__index = SearchResult
 M.SearchResult = SearchResult
 
 function SearchResult.new(s, e, err)
-  vim.validate({s = {s, "table", true}, e = {e, "table", true}, err = {err, "string", true}})
-  local tbl = {matched_start = s, matched_end = e, err = err, matched = (s and e) ~= nil}
+  vim.validate({ s = { s, "table", true }, e = { e, "table", true }, err = { err, "string", true } })
+  local tbl = { matched_start = s, matched_end = e, err = err, matched = (s and e) ~= nil }
   return setmetatable(tbl, SearchResult)
 end
 
@@ -61,7 +61,7 @@ function SearchResultFactory.create(self, input)
   end
   vim.fn.setreg("/", input)
 
-  local s = {row, col}
+  local s = { row, col }
   local e = self:_matched_end(row, col, input)
   return SearchResult.new(s, e)
 end
@@ -90,14 +90,14 @@ function SearchResultFactory._search(self, input)
     -- HACK
     column = column + 1
   end
-  vim.api.nvim_win_set_cursor(self._window_id, {origin_row, origin_col})
+  vim.api.nvim_win_set_cursor(self._window_id, { origin_row, origin_col })
   return row, column + 1, nil
 end
 
 function SearchResultFactory.match(self, row, col, next_cmd, prev_cmd, input)
   local origin_row, origin_col = unpack(vim.api.nvim_win_get_cursor(self._window_id))
 
-  vim.api.nvim_win_set_cursor(self._window_id, {row, col})
+  vim.api.nvim_win_set_cursor(self._window_id, { row, col })
 
   vim.api.nvim_win_call(self._window_id, function()
     if SearchDirection.current():is_forward() then
@@ -108,15 +108,15 @@ function SearchResultFactory.match(self, row, col, next_cmd, prev_cmd, input)
 
   local start_row, start_col = unpack(vim.api.nvim_win_get_cursor(self._window_id))
   start_col = start_col + 1
-  vim.api.nvim_win_set_cursor(self._window_id, {row, col})
+  vim.api.nvim_win_set_cursor(self._window_id, { row, col })
 
-  local s = {start_row, start_col}
+  local s = { start_row, start_col }
   if input == "\\v\\n" or input == "\\n" then
     -- HACK
     s[1] = s[1] + 1
   end
   local e = self:_matched_end(start_row, start_col, input)
-  vim.api.nvim_win_set_cursor(self._window_id, {origin_row, origin_col})
+  vim.api.nvim_win_set_cursor(self._window_id, { origin_row, origin_col })
   return SearchResult.new(s, e)
 end
 
@@ -129,8 +129,8 @@ function SearchResultFactory._matched_end(self, row, col, input)
   local end_row, end_col = unpack(vim.api.nvim_win_call(self._window_id, function()
     return vim.fn.searchpos(input, self._end_match_flag)
   end))
-  vim.api.nvim_win_set_cursor(self._window_id, {origin_row, origin_col})
-  return {end_row, end_col}
+  vim.api.nvim_win_set_cursor(self._window_id, { origin_row, origin_col })
+  return { end_row, end_col }
 end
 
 return M

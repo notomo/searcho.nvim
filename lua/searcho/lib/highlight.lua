@@ -19,12 +19,12 @@ function Highlighter.add_ranged_virtual(self, strs, hl_group, start_row, start_c
   local count = #strs
   if count == 1 then
     local str = strs[1]
-    table.insert(args, {{{str, hl_group}}, start_row, start_col, opts})
+    table.insert(args, { { { str, hl_group } }, start_row, start_col, opts })
   elseif count > 1 then
     local eol = vim.opt.listchars:get().eol or ""
     local row = start_row
     for _, str in ipairs(strs) do
-      table.insert(args, {{{str .. eol, hl_group}}, row, 0, opts})
+      table.insert(args, { { { str .. eol, hl_group } }, row, 0, opts })
       row = row + 1
     end
     args[1][3] = start_col
@@ -44,15 +44,15 @@ HighlighterFactory.__index = HighlighterFactory
 M.HighlighterFactory = HighlighterFactory
 
 function HighlighterFactory.new(key, bufnr)
-  vim.validate({key = {key, "string"}, bufnr = {bufnr, "number", true}})
+  vim.validate({ key = { key, "string" }, bufnr = { bufnr, "number", true } })
   local ns = vim.api.nvim_create_namespace(key)
-  local tbl = {_ns = ns, _bufnr = bufnr}
+  local tbl = { _ns = ns, _bufnr = bufnr }
   return setmetatable(tbl, HighlighterFactory)
 end
 
 function HighlighterFactory.create(self, bufnr)
   bufnr = bufnr or self._bufnr
-  local highlighter = {_bufnr = bufnr, _ns = self._ns}
+  local highlighter = { _bufnr = bufnr, _ns = self._ns }
   return setmetatable(highlighter, Highlighter)
 end
 

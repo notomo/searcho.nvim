@@ -9,7 +9,7 @@ M.SearchHighlight = SearchHighlight
 
 function SearchHighlight.new(window_id)
   local bufnr = vim.api.nvim_win_get_buf(window_id)
-  local tbl = {_hl_factory = HighlighterFactory.new("searcho", bufnr), _bufnr = bufnr}
+  local tbl = { _hl_factory = HighlighterFactory.new("searcho", bufnr), _bufnr = bufnr }
   return setmetatable(tbl, SearchHighlight)
 end
 

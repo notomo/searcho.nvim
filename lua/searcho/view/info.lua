@@ -8,8 +8,8 @@ Info.__index = Info
 M.Info = Info
 
 function Info.new(bufnr, window_id)
-  vim.validate({bufnr = {bufnr, "number"}, window_id = {window_id, "number"}})
-  local tbl = {_window_id = window_id, _hl_factory = HighlighterFactory.new("searcho", bufnr)}
+  vim.validate({ bufnr = { bufnr, "number" }, window_id = { window_id, "number" } })
+  local tbl = { _window_id = window_id, _hl_factory = HighlighterFactory.new("searcho", bufnr) }
   return setmetatable(tbl, Info)
 end
 
@@ -18,7 +18,7 @@ function Info.show(self)
   local msg = vim.api.nvim_win_call(self._window_id, function()
     return self:_count()
   end)
-  highlighter:add_virtual({{msg, "Comment"}}, 0, 0, {})
+  highlighter:add_virtual({ { msg, "Comment" } }, 0, 0, {})
   return msg
 end
 

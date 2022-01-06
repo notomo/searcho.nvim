@@ -1,9 +1,9 @@
 local M = {}
 
 function M.set_column(column)
-  vim.validate({column = {column, "number"}})
+  vim.validate({ column = { column, "number" } })
   local row = vim.api.nvim_win_get_cursor(0)[1]
-  vim.api.nvim_win_set_cursor(0, {row, column - 1})
+  vim.api.nvim_win_set_cursor(0, { row, column - 1 })
 end
 
 local function trim_intersection(str, mask_str)
@@ -33,10 +33,10 @@ function M.word_head_position(window_id)
   local width = vim.fn.strdisplaywidth(trim_intersection(word, suffix))
   local new_column = column - width
   if new_column <= 0 then
-    return {row, 0}
+    return { row, 0 }
   end
 
-  return {row, new_column - 1}
+  return { row, new_column - 1 }
 end
 
 function M.word_tail_position(window_id)
@@ -50,43 +50,43 @@ function M.word_tail_position(window_id)
   local suffix = vim.fn.matchstr(line, pattern)
   local width = vim.fn.strdisplaywidth(suffix)
   local new_column = column + width
-  return {row, new_column}
+  return { row, new_column }
 end
 
 function M.to_left_by(window_id, str)
   local row, column = unpack(vim.api.nvim_win_get_cursor(window_id))
   local length = vim.fn.strlen(str)
-  vim.api.nvim_win_set_cursor(window_id, {row, column - length})
+  vim.api.nvim_win_set_cursor(window_id, { row, column - length })
 end
 
 function M.get_left(window_id, row, column)
   local origin_row, origin_col = unpack(vim.api.nvim_win_get_cursor(window_id))
   local reset = function()
-    vim.api.nvim_win_set_cursor(window_id, {origin_row, origin_col})
+    vim.api.nvim_win_set_cursor(window_id, { origin_row, origin_col })
   end
 
   if column > 0 then
-    return {row, column - 1}
+    return { row, column - 1 }
   end
 
   if row > 1 then
-    vim.api.nvim_win_set_cursor(window_id, {row - 1, 0})
+    vim.api.nvim_win_set_cursor(window_id, { row - 1, 0 })
     local last_column = vim.api.nvim_win_call(window_id, function()
       return vim.fn.col("$")
     end)
     reset()
-    return {row - 1, last_column}
+    return { row - 1, last_column }
   end
 
   local last_row = vim.api.nvim_win_call(window_id, function()
     return vim.fn.line("$")
   end)
-  vim.api.nvim_win_set_cursor(window_id, {last_row, 0})
+  vim.api.nvim_win_set_cursor(window_id, { last_row, 0 })
   local last_column = vim.api.nvim_win_call(window_id, function()
     return vim.fn.col("$")
   end)
   reset()
-  return {last_row, last_column}
+  return { last_row, last_column }
 end
 
 function M.left(window_id, row, column)
@@ -126,7 +126,7 @@ end
 
 function M.add_column(window_id)
   local row, col = unpack(vim.api.nvim_win_get_cursor(window_id))
-  vim.api.nvim_win_set_cursor(window_id, {row, col + 1})
+  vim.api.nvim_win_set_cursor(window_id, { row, col + 1 })
 end
 
 return M

@@ -31,11 +31,19 @@ end
 
 function CursorMovedCallback.setup(self)
   self:disable()
-  vim.cmd(([[autocmd %s CursorMoved * ++once lua require("searcho.core.cursor_moved_callback").CursorMovedCallback.get():_setup()]]):format(self._group_name))
+  vim.cmd(
+    (
+      [[autocmd %s CursorMoved * ++once lua require("searcho.core.cursor_moved_callback").CursorMovedCallback.get():_setup()]]
+    ):format(self._group_name)
+  )
 end
 
 function CursorMovedCallback._setup(self)
-  vim.cmd(([[autocmd %s CursorMoved * ++once lua require("searcho.core.cursor_moved_callback").CursorMovedCallback.get():_execute()]]):format(self._group_name))
+  vim.cmd(
+    (
+      [[autocmd %s CursorMoved * ++once lua require("searcho.core.cursor_moved_callback").CursorMovedCallback.get():_execute()]]
+    ):format(self._group_name)
+  )
 end
 
 function CursorMovedCallback._execute(self)

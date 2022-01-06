@@ -5,7 +5,7 @@ SearchDirection.__index = SearchDirection
 M.SearchDirection = SearchDirection
 
 function SearchDirection.new(is_forward)
-  vim.validate({is_forward = {is_forward, "boolean"}})
+  vim.validate({ is_forward = { is_forward, "boolean" } })
 
   local searchforward
   if is_forward then
@@ -14,7 +14,7 @@ function SearchDirection.new(is_forward)
     searchforward = 0
   end
 
-  local tbl = {_searchforward = searchforward}
+  local tbl = { _searchforward = searchforward }
   return setmetatable(tbl, SearchDirection)
 end
 

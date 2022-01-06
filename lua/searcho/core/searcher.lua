@@ -18,10 +18,10 @@ M.Searcher = Searcher
 
 function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_pos)
   vim.validate({
-    window_id = {window_id, "number"},
-    is_forward = {is_forward, "boolean"},
-    accepted_cursor_position = {accepted_cursor_position, "boolean"},
-    adjust_pos = {adjust_pos, "table", true},
+    window_id = { window_id, "number" },
+    is_forward = { is_forward, "boolean" },
+    accepted_cursor_position = { accepted_cursor_position, "boolean" },
+    adjust_pos = { adjust_pos, "table", true },
   })
 
   local cursor_moved_callback = CursorMovedCallback.new()
@@ -109,7 +109,7 @@ function Searcher.next_page(self)
   end
   self._cursor_moved_callback:setup()
 
-  local row, col = unpack({cursorlib.next_page_row(self._window_id), 0})
+  local row, col = unpack({ cursorlib.next_page_row(self._window_id), 0 })
   local result = self._result_factory:match(row, col, "n", "2N", self._input)
   return self:_update(result)
 end
@@ -120,7 +120,7 @@ function Searcher.previous_page(self)
   end
   self._cursor_moved_callback:setup()
 
-  local row, col = unpack({cursorlib.previous_page_row(self._window_id), 0})
+  local row, col = unpack({ cursorlib.previous_page_row(self._window_id), 0 })
   local result = self._result_factory:match(row, col, "N", "2n", self._input)
   return self:_update(result)
 end
@@ -164,7 +164,7 @@ function Searcher._update(self, result)
   self:_centering_if_need(start_row)
   self._highlight:enable(self._input, start_row, start_col, end_row, end_col)
 
-  vim.api.nvim_win_set_cursor(self._window_id, {start_row, start_col})
+  vim.api.nvim_win_set_cursor(self._window_id, { start_row, start_col })
 end
 
 function Searcher._centering_if_need(self, row)

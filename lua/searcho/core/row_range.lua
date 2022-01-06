@@ -5,13 +5,13 @@ RowRange.__index = RowRange
 M.RowRange = RowRange
 
 function RowRange.new(s, e)
-  vim.validate({s = {s, "number"}, e = {e, "number"}})
-  local tbl = {_s = s, _e = e}
+  vim.validate({ s = { s, "number" }, e = { e, "number" } })
+  local tbl = { _s = s, _e = e }
   return setmetatable(tbl, RowRange)
 end
 
 function RowRange.current(window_id)
-  vim.validate({window_id = {window_id, "number"}})
+  vim.validate({ window_id = { window_id, "number" } })
 
   local s, e
   vim.api.nvim_win_call(window_id, function()

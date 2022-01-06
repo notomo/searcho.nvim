@@ -2,7 +2,6 @@ local helper = require("searcho.lib.testlib.helper")
 local searcho = helper.require("searcho")
 
 describe("searcho.forward()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -50,18 +49,18 @@ target3]])
   end)
 
   it("can set key mapping by FileType autocmd", function()
-    vim.cmd([[autocmd FileType searcho ++once nnoremap <buffer> TEST <Cmd>lua vim.api.nvim_echo({{"key_mapping_test"}, {"\n"}}, true, {})<CR>]])
+    vim.cmd(
+      [[autocmd FileType searcho ++once nnoremap <buffer> TEST <Cmd>lua vim.api.nvim_echo({{"key_mapping_test"}, {"\n"}}, true, {})<CR>]]
+    )
 
     searcho.forward("")
     vim.api.nvim_feedkeys("TEST", "x", true)
 
     assert.exists_message("key_mapping_test")
   end)
-
 end)
 
 describe("searcho.backward()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -94,11 +93,9 @@ target3]])
 
     assert.current_line("target1")
   end)
-
 end)
 
 describe("searcho.forward_word()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -132,11 +129,9 @@ target 3
 
     assert.current_line("target 2")
   end)
-
 end)
 
 describe("searcho.backward_word()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -173,11 +168,9 @@ target 3
 
     assert.current_line("target 1")
   end)
-
 end)
 
 describe("searcho.cancel()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -211,11 +204,9 @@ target
 
     assert.equals(0, vim.o.scrolloff)
   end)
-
 end)
 
 describe("searcho.finish()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -274,15 +265,13 @@ target2
 
     searcho.forward("target")
     searcho.finish()
-    vim.cmd("normal! " .. vim.api.nvim_eval("\"\\<C-o>\""))
+    vim.cmd("normal! " .. vim.api.nvim_eval('"\\<C-o>"'))
 
     assert.current_line("target1")
   end)
-
 end)
 
 describe("searcho.next_match()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -327,11 +316,9 @@ no
 
     assert.current_line("no")
   end)
-
 end)
 
 describe("searcho.previous_match()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -380,11 +367,9 @@ no
 
     assert.current_line("no")
   end)
-
 end)
 
 describe("searcho.next_page()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -439,11 +424,9 @@ no
 
     assert.current_line("no")
   end)
-
 end)
 
 describe("searcho.previous_page()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -501,11 +484,9 @@ no
 
     assert.current_line("no")
   end)
-
 end)
 
 describe("searcho.next()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -535,11 +516,9 @@ target
     searcho.next()
     vim.cmd("tabedit")
   end)
-
 end)
 
 describe("searcho.previous()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -559,11 +538,9 @@ target2
 
     assert.current_line("target1")
   end)
-
 end)
 
 describe("searcho.forward_history()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -591,11 +568,9 @@ bar
 
     assert.cursor_word("bar")
   end)
-
 end)
 
 describe("searcho.backward_history()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -624,11 +599,9 @@ foo
 
     assert.equals("recall_history", vim.fn.histget("/"))
   end)
-
 end)
 
 describe("searcho buffer name", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -645,5 +618,4 @@ describe("searcho buffer name", function()
 
     assert.buffer_name("searcho://" .. helper.root .. "/test_buffer_name.lua")
   end)
-
 end)

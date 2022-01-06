@@ -8,7 +8,7 @@ Origin.__index = Origin
 M.Origin = Origin
 
 function Origin.new(window_id)
-  vim.validate({window_id = {window_id, "number"}})
+  vim.validate({ window_id = { window_id, "number" } })
 
   local saved = vim.api.nvim_win_call(window_id, function()
     return vim.fn.winsaveview()
@@ -34,7 +34,7 @@ function Origin.restore(self)
   end)
 
   -- +1 for stopinsert
-  vim.api.nvim_win_set_cursor(self._window_id, {self.position[1], self.position[2] + 1})
+  vim.api.nvim_win_set_cursor(self._window_id, { self.position[1], self.position[2] + 1 })
 end
 
 function Origin.restore_scrolloff(self)

@@ -7,7 +7,7 @@ SideInfo.__index = SideInfo
 M.SideInfo = SideInfo
 
 function SideInfo.new(window_id)
-  vim.validate({window_id = {window_id, "number"}})
+  vim.validate({ window_id = { window_id, "number" } })
   local bufnr = vim.api.nvim_win_get_buf(window_id)
   local tbl = {
     _hl_factory = HighlighterFactory.new("searcho_side_info", bufnr),
@@ -22,7 +22,7 @@ function SideInfo.show(self, msg)
     return
   end
   local cursor = vim.api.nvim_win_get_cursor(self._window_id)
-  highlighter:add_virtual({{" " .. msg, "Comment"}}, cursor[1] - 1, 0, {})
+  highlighter:add_virtual({ { " " .. msg, "Comment" } }, cursor[1] - 1, 0, {})
 end
 
 function SideInfo.clear(self)

@@ -26,7 +26,7 @@ function Inputter.new(origin_bufnr)
   local name = "searcho://" .. origin_name
   local old = vim.fn.bufnr(("^%s$"):format(name))
   if old ~= -1 then
-    vim.api.nvim_buf_delete(old, {force = true})
+    vim.api.nvim_buf_delete(old, { force = true })
   end
   vim.api.nvim_buf_call(bufnr, function()
     vim.api.nvim_exec(Inputter.key_mapping_script, false)
@@ -35,15 +35,15 @@ function Inputter.new(origin_bufnr)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].filetype = "searcho"
 
-  local tbl = {window_id = nil, bufnr = bufnr, _history_offset = 0}
+  local tbl = { window_id = nil, bufnr = bufnr, _history_offset = 0 }
   return setmetatable(tbl, Inputter)
 end
 
 function Inputter.open(self, callback, default_input, default_right_input)
   vim.validate({
-    callback = {callback, "function"},
-    default_input = {default_input, "string", true},
-    default_right_input = {default_right_input, "string", true},
+    callback = { callback, "function" },
+    default_input = { default_input, "string", true },
+    default_right_input = { default_right_input, "string", true },
   })
   default_input = default_input or ""
   default_right_input = default_right_input or ""
@@ -62,7 +62,11 @@ function Inputter.open(self, callback, default_input, default_right_input)
   vim.wo[window_id].signcolumn = "yes:1"
   self.window_id = window_id
 
-  vim.cmd(("autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout,InsertLeave <buffer=%s> ++once lua require('searcho.command').Command.new('close', %s)"):format(self.bufnr, window_id))
+  vim.cmd(
+    (
+      "autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout,InsertLeave <buffer=%s> ++once lua require('searcho.command').Command.new('close', %s)"
+    ):format(self.bufnr, window_id)
+  )
 
   vim.api.nvim_buf_attach(self.bufnr, false, {
     on_lines = wraplib.traceback(function()
@@ -83,7 +87,7 @@ function Inputter.open(self, callback, default_input, default_right_input)
 end
 
 function Inputter._set_line(self, line)
-  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, {vim.split(line, "\n", true)[1]})
+  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, { vim.split(line, "\n", true)[1] })
 end
 
 function Inputter._get_line(self)
@@ -113,7 +117,7 @@ end
 
 function Inputter.close(self)
   -- NOTICE: because sometimes the buffer is not deleted.
-  vim.api.nvim_buf_delete(self.bufnr, {force = true})
+  vim.api.nvim_buf_delete(self.bufnr, { force = true })
   windowlib.close(self.window_id)
   vim.cmd("stopinsert")
 end
