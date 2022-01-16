@@ -11,7 +11,7 @@ local function trim_intersection(str, mask_str)
   local suffix = mask_str
   for _, c in ipairs(chars) do
     if vim.endswith(str, suffix) then
-      local s = str:gsub(suffix .. "$", "")
+      local s = str:gsub(vim.pesc(suffix) .. "$", "")
       return s
     end
     suffix = suffix:gsub(c .. "$", "")
