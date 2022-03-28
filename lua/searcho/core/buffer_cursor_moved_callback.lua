@@ -1,4 +1,4 @@
-local repository = require("searcho.lib.repository").Repository.new("buffer_cursor_moved_callback")
+local callbacks = {}
 
 local vim = vim
 
@@ -22,7 +22,7 @@ function BufferCursorMovedCallback.new(bufnr, callback)
     _callback = callback or function() end,
   }
   local self = setmetatable(tbl, BufferCursorMovedCallback)
-  repository:set(bufnr, self)
+  callbacks[bufnr] = self
   return self
 end
 
@@ -50,7 +50,7 @@ end
 
 function BufferCursorMovedCallback._execute(self)
   self._callback()
-  repository:delete(self._bufnr)
+  callbacks[self._bufnr] = nil
 end
 
 function BufferCursorMovedCallback.disable(self)
@@ -69,7 +69,7 @@ function BufferCursorMovedCallback.reset(self)
 end
 
 function BufferCursorMovedCallback.get(bufnr)
-  local self = repository:get(bufnr)
+  local self = callbacks[bufnr]
   if not self then
     return BufferCursorMovedCallback.new(bufnr)
   end
