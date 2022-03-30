@@ -49,9 +49,15 @@ target3]])
   end)
 
   it("can set key mapping by FileType autocmd", function()
-    vim.cmd(
-      [[autocmd FileType searcho ++once nnoremap <buffer> TEST <Cmd>lua vim.api.nvim_echo({{"key_mapping_test"}, {"\n"}}, true, {})<CR>]]
-    )
+    vim.api.nvim_create_autocmd({ "FileType" }, {
+      pattern = { "searcho" },
+      once = true,
+      callback = function()
+        vim.keymap.set("n", "TEST", function()
+          vim.api.nvim_echo({ { "key_mapping_test" }, { "\n" } }, true, {})
+        end)
+      end,
+    })
 
     searcho.forward("")
     vim.api.nvim_feedkeys("TEST", "x", true)

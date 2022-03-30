@@ -2,12 +2,6 @@ local callbacks = {}
 
 local vim = vim
 
-local group_name = "searcho_buffer_cursor_moved_callback"
-vim.cmd(([[
-augroup %s
-augroup END
-]]):format(group_name))
-
 local M = {}
 
 local BufferCursorMovedCallback = {}
@@ -15,7 +9,12 @@ BufferCursorMovedCallback.__index = BufferCursorMovedCallback
 M.BufferCursorMovedCallback = BufferCursorMovedCallback
 
 function BufferCursorMovedCallback.new(bufnr, callback)
-  vim.validate({ bufnr = { bufnr, "number" }, callback = { callback, "function", true } })
+  vim.validate({
+    bufnr = { bufnr, "number" },
+    callback = { callback, "function", true },
+  })
+  local group_name = "searcho_buffer_cursor_moved_callback"
+  vim.api.nvim_create_augroup(group_name, {})
   local tbl = {
     _group_name = group_name,
     _bufnr = bufnr,
@@ -28,24 +27,33 @@ end
 
 function BufferCursorMovedCallback.setup(self)
   self:disable()
-  vim.cmd(
-    (
-      [[autocmd %s CursorMoved <buffer=%s> ++once lua require("searcho.core.buffer_cursor_moved_callback").BufferCursorMovedCallback.get(%s):_setup()]]
-    ):format(self._group_name, self._bufnr, self._bufnr)
-  )
-  vim.cmd(
-    (
-      [[autocmd %s BufLeave <buffer=%s> ++once lua require("searcho.core.buffer_cursor_moved_callback").BufferCursorMovedCallback.get(%s):_clear()]]
-    ):format(self._group_name, self._bufnr, self._bufnr)
-  )
+  vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+    group = self._group_name,
+    buffer = self._bufnr,
+    once = true,
+    callback = function()
+      BufferCursorMovedCallback.get(self._bufnr):_setup()
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "BufLeave" }, {
+    group = self._group_name,
+    buffer = self._bufnr,
+    once = true,
+    callback = function()
+      BufferCursorMovedCallback.get(self._bufnr):_clear()
+    end,
+  })
 end
 
 function BufferCursorMovedCallback._setup(self)
-  vim.cmd(
-    (
-      [[autocmd %s CursorMoved <buffer=%s> ++once lua require("searcho.core.buffer_cursor_moved_callback").BufferCursorMovedCallback.get(%s):_execute()]]
-    ):format(self._group_name, self._bufnr, self._bufnr)
-  )
+  vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+    group = self._group_name,
+    buffer = self._bufnr,
+    once = true,
+    callback = function()
+      BufferCursorMovedCallback.get(self._bufnr):_execute()
+    end,
+  })
 end
 
 function BufferCursorMovedCallback._execute(self)
@@ -54,8 +62,7 @@ function BufferCursorMovedCallback._execute(self)
 end
 
 function BufferCursorMovedCallback.disable(self)
-  vim.cmd(([[autocmd! %s CursorMoved <buffer=%s>]]):format(self._group_name, self._bufnr))
-  vim.cmd(([[autocmd! %s BufLeave <buffer=%s>]]):format(self._group_name, self._bufnr))
+  vim.api.nvim_create_augroup(self._group_name, {})
 end
 
 function BufferCursorMovedCallback._clear(self)

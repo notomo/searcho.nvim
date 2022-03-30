@@ -37,7 +37,7 @@ function M.input(str)
 end
 
 function M.cursor_moved()
-  vim.cmd("doautocmd CursorMoved")
+  vim.api.nvim_exec_autocmd("CursorMoved", {})
 end
 
 local asserts = require("vusted.assert").asserts

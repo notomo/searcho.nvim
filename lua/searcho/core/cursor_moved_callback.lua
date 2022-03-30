@@ -1,11 +1,5 @@
 local vim = vim
 
-local group_name = "searcho_cursor_moved_callback"
-vim.cmd(([[
-augroup %s
-augroup END
-]]):format(group_name))
-
 local M = {}
 
 local CursorMovedCallback = {}
@@ -15,6 +9,8 @@ M.CursorMovedCallback = CursorMovedCallback
 local last = nil
 
 function CursorMovedCallback.new()
+  local group_name = "searcho_cursor_moved_callback"
+  vim.api.nvim_create_augroup(group_name, {})
   local tbl = {
     _group_name = group_name,
     _callback = function()
@@ -31,19 +27,25 @@ end
 
 function CursorMovedCallback.setup(self)
   self:disable()
-  vim.cmd(
-    (
-      [[autocmd %s CursorMoved * ++once lua require("searcho.core.cursor_moved_callback").CursorMovedCallback.get():_setup()]]
-    ):format(self._group_name)
-  )
+  vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+    group = self._group_name,
+    pattern = { "*" },
+    once = true,
+    callback = function()
+      CursorMovedCallback.get():_setup()
+    end,
+  })
 end
 
 function CursorMovedCallback._setup(self)
-  vim.cmd(
-    (
-      [[autocmd %s CursorMoved * ++once lua require("searcho.core.cursor_moved_callback").CursorMovedCallback.get():_execute()]]
-    ):format(self._group_name)
-  )
+  vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+    group = self._group_name,
+    pattern = { "*" },
+    once = true,
+    callback = function()
+      CursorMovedCallback.get():_execute()
+    end,
+  })
 end
 
 function CursorMovedCallback._execute(self)
@@ -51,7 +53,7 @@ function CursorMovedCallback._execute(self)
 end
 
 function CursorMovedCallback.disable(self)
-  vim.cmd(([[autocmd! %s CursorMoved]]):format(self._group_name))
+  vim.api.nvim_create_augroup(self._group_name, {})
 end
 
 function CursorMovedCallback.reset(self)
