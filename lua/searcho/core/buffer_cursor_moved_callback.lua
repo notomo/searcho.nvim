@@ -1,4 +1,4 @@
-local callbacks = {}
+local _callbacks = {}
 
 local vim = vim
 
@@ -21,7 +21,7 @@ function BufferCursorMovedCallback.new(bufnr, callback)
     _callback = callback or function() end,
   }
   local self = setmetatable(tbl, BufferCursorMovedCallback)
-  callbacks[bufnr] = self
+  _callbacks[bufnr] = self
   return self
 end
 
@@ -40,7 +40,8 @@ function BufferCursorMovedCallback.setup(self)
     buffer = self._bufnr,
     once = true,
     callback = function()
-      BufferCursorMovedCallback.get(self._bufnr):_clear()
+      self:disable()
+      self._callback()
     end,
   })
 end
@@ -51,23 +52,14 @@ function BufferCursorMovedCallback._setup(self)
     buffer = self._bufnr,
     once = true,
     callback = function()
-      BufferCursorMovedCallback.get(self._bufnr):_execute()
+      self._callback()
+      _callbacks[self._bufnr] = nil
     end,
   })
 end
 
-function BufferCursorMovedCallback._execute(self)
-  self._callback()
-  callbacks[self._bufnr] = nil
-end
-
 function BufferCursorMovedCallback.disable(self)
   vim.api.nvim_clear_autocmds({ group = self._group_name })
-end
-
-function BufferCursorMovedCallback._clear(self)
-  self:disable()
-  self._callback()
 end
 
 function BufferCursorMovedCallback.reset(self)
@@ -76,7 +68,7 @@ function BufferCursorMovedCallback.reset(self)
 end
 
 function BufferCursorMovedCallback.get(bufnr)
-  local self = callbacks[bufnr]
+  local self = _callbacks[bufnr]
   if not self then
     return BufferCursorMovedCallback.new(bufnr)
   end

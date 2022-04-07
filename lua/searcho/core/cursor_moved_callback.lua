@@ -43,13 +43,9 @@ function CursorMovedCallback._setup(self)
     pattern = { "*" },
     once = true,
     callback = function()
-      CursorMovedCallback.get():_execute()
+      self._callback()
     end,
   })
-end
-
-function CursorMovedCallback._execute(self)
-  self._callback()
 end
 
 function CursorMovedCallback.disable(self)
