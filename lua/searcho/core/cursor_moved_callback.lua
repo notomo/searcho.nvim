@@ -53,7 +53,7 @@ function CursorMovedCallback._execute(self)
 end
 
 function CursorMovedCallback.disable(self)
-  vim.api.nvim_create_augroup(self._group_name, {})
+  vim.api.nvim_clear_autocmds({ group = self._group_name })
 end
 
 function CursorMovedCallback.reset(self)
