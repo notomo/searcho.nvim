@@ -1,37 +1,20 @@
 local View = require("searcho.view").View
 local messagelib = require("searcho.lib.message")
 
-local M = {}
+local ShowAsUserError = require("searcho.vendor.misclib.error_handler").for_show_as_user_error()
+local ShowError = require("searcho.vendor.misclib.error_handler").for_show_error()
 
-local Command = {}
-Command.__index = Command
-M.Command = Command
-
-function Command.new(name, ...)
-  local args = { ... }
-  local f = function()
-    return Command[name](unpack(args))
-  end
-
-  local ok, msg = xpcall(f, debug.traceback)
-  if not ok then
-    return messagelib.error(msg)
-  elseif msg then
-    return messagelib.vim_warn(msg)
-  end
-end
-
-function Command.search(method_name, input)
+function ShowAsUserError.search(method_name, input)
   return View.open_searcher(method_name, input)
 end
 
-function Command.search_word(method_name, opts)
+function ShowAsUserError.search_word(method_name, opts)
   vim.validate({ opts = { opts, "table", true } })
   opts = opts or {}
   return View.open_word_searcher(method_name, opts.left, opts.right)
 end
 
-function Command.move_cursor(method_name)
+function ShowError.move_cursor(method_name)
   local view = View.current()
   if not view then
     return "no state"
@@ -39,7 +22,7 @@ function Command.move_cursor(method_name)
   return view:move_cursor(method_name)
 end
 
-function Command.move_cursor_in_normal(method_name)
+function ShowAsUserError.move_cursor_in_normal(method_name)
   local msg, err = View.move_cursor_in_normal(method_name)
   if err then
     return err
@@ -47,7 +30,7 @@ function Command.move_cursor_in_normal(method_name)
   return messagelib.raw_info(msg)
 end
 
-function Command.finish()
+function ShowError.finish()
   local view = View.current()
   if not view then
     return "no state"
@@ -59,7 +42,7 @@ function Command.finish()
   return messagelib.raw_info(msg)
 end
 
-function Command.cancel()
+function ShowError.cancel()
   local view = View.current()
   if not view then
     return
@@ -67,7 +50,7 @@ function Command.cancel()
   return view:cancel()
 end
 
-function Command.recall_history(offset)
+function ShowError.recall_history(offset)
   vim.validate({ offset = { offset, "number" } })
   local view = View.current()
   if not view then
@@ -76,7 +59,7 @@ function Command.recall_history(offset)
   view:recall_history(offset)
 end
 
-function Command.close(id)
+function ShowError.close(id)
   vim.validate({ id = { id, "number" } })
   local view = View.get(id)
   if not view then
@@ -85,4 +68,4 @@ function Command.close(id)
   view:cancel()
 end
 
-return M
+return vim.tbl_extend("force", ShowAsUserError:methods(), ShowError:methods())

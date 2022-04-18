@@ -62,11 +62,13 @@ function Inputter.open(self, callback, default_input, default_right_input)
   vim.wo[window_id].signcolumn = "yes:1"
   self.window_id = window_id
 
-  vim.cmd(
-    (
-      "autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout,InsertLeave <buffer=%s> ++once lua require('searcho.command').Command.new('close', %s)"
-    ):format(self.bufnr, window_id)
-  )
+  vim.api.nvim_create_autocmd({ "WinClosed", "WinLeave", "TabLeave", "BufLeave", "BufWipeout", "InsertLeave" }, {
+    buffer = self.bufnr,
+    once = true,
+    callback = function()
+      require("searcho.command").close(window_id)
+    end,
+  })
 
   vim.api.nvim_buf_attach(self.bufnr, false, {
     on_lines = wraplib.traceback(function()
