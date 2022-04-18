@@ -1,4 +1,4 @@
-local windowlib = require("searcho.lib.window")
+local windowlib = require("searcho.vendor.misclib.window")
 local cursorlib = require("searcho.lib.cursor")
 local wraplib = require("searcho.lib.wrap")
 local vim = vim
@@ -120,7 +120,7 @@ end
 function Inputter.close(self)
   -- NOTICE: because sometimes the buffer is not deleted.
   vim.api.nvim_buf_delete(self.bufnr, { force = true })
-  windowlib.close(self.window_id)
+  windowlib.safe_close(self.window_id)
   vim.cmd("stopinsert")
 end
 
