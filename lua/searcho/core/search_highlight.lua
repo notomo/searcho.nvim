@@ -39,7 +39,7 @@ function SearchHighlight._enable_current_match(self, start_row, start_col, end_r
   local highlighter = self:reset_current_match()
   local text = bufferlib.get_text(self._bufnr, start_row - 1, start_col, end_row - 1, end_col)
   local strs = vim.split(text, "\n", true)
-  highlighter:add_ranged_virtual(strs, "IncSearch", start_row - 1, start_col - 1, {
+  highlighter:add_ranged_virtual(strs, "CurSearch", start_row - 1, start_col - 1, {
     virt_text_pos = "overlay",
   })
 end
