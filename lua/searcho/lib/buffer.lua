@@ -3,6 +3,9 @@ local M = {}
 local function _adjust(line, start_col, end_col)
   local end_line = line:sub(start_col, end_col)
   local pattern = ("\\v\\k*%%%sc\\zs."):format(end_col)
+  if vim.fn.type(line) == vim.v.t_blob then
+    return ""
+  end
   local last_char = vim.fn.matchstr(line, pattern)
   if last_char == "" then
     return end_line .. "\n"
