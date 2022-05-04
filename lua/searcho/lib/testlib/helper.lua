@@ -1,42 +1,27 @@
 local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
-local M = require("vusted.helper")
+local helper = require("vusted.helper")
 
-M.root = M.find_plugin_root(plugin_name)
+helper.root = helper.find_plugin_root(plugin_name)
 
-function M.before_each()
-  vim.o.lines = 24
-  vim.o.columns = 80
-  vim.o.display = "lastline,msgsep" -- workaround for crash
-  vim.cmd("filetype on")
-  vim.cmd("syntax enable")
-end
+function helper.before_each() end
 
-function M.after_each()
-  vim.cmd("tabedit")
-  vim.cmd("tabonly!")
-  vim.cmd("silent! %bwipeout!")
-  vim.cmd("filetype off")
-  vim.cmd("syntax off")
-  vim.cmd("messages clear")
-  vim.fn.setreg("/", "")
-  vim.fn.histdel("/", "^\\*")
+function helper.after_each()
+  vim.api.nvim_set_current_dir(helper.root)
+  helper.cleanup()
+  helper.cleanup_loaded_modules(plugin_name)
   print(" ")
-
-  vim.api.nvim_set_current_dir(M.root)
-
-  M.cleanup_loaded_modules(plugin_name)
 end
 
-function M.set_lines(lines)
+function helper.set_lines(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
 
-function M.input(str)
+function helper.input(str)
   local texts = vim.split(str, "\n", true)
   vim.api.nvim_put(texts, "", false, true)
 end
 
-function M.cursor_moved()
+function helper.cursor_moved()
   vim.api.nvim_exec_autocmds("CursorMoved", {})
 end
 
@@ -69,4 +54,4 @@ asserts.create("exists_message"):register(function(self)
   end
 end)
 
-return M
+return helper
