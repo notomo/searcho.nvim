@@ -1,8 +1,5 @@
-local M = {}
-
 local RowRange = {}
 RowRange.__index = RowRange
-M.RowRange = RowRange
 
 function RowRange.new(s, e)
   vim.validate({ s = { s, "number" }, e = { e, "number" } })
@@ -25,4 +22,4 @@ function RowRange.include(self, row)
   return self._s <= row and row <= self._e
 end
 
-return M
+return RowRange

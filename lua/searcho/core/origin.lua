@@ -1,11 +1,8 @@
-local SearchDirection = require("searcho.core.search_direction").SearchDirection
-local SearchScroll = require("searcho.core.search_scroll").SearchScroll
-
-local M = {}
+local SearchDirection = require("searcho.core.search_direction")
+local SearchScroll = require("searcho.core.search_scroll")
 
 local Origin = {}
 Origin.__index = Origin
-M.Origin = Origin
 
 function Origin.new(window_id)
   vim.validate({ window_id = { window_id, "number" } })
@@ -41,4 +38,4 @@ function Origin.restore_scrolloff(self)
   self._search_scroll:set()
 end
 
-return M
+return Origin

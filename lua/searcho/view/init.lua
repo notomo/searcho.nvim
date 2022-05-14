@@ -1,15 +1,12 @@
-local Inputter = require("searcho.view.inputter").Inputter
-local Info = require("searcho.view.info").Info
-local SideInfo = require("searcho.view.side_info").SideInfo
-local Searcher = require("searcho.core.searcher").Searcher
+local Inputter = require("searcho.view.inputter")
+local Info = require("searcho.view.info")
+local SideInfo = require("searcho.view.side_info")
+local Searcher = require("searcho.core.searcher")
 
 local views = {}
 
-local M = {}
-
 local View = {}
 View.__index = View
-M.View = View
 
 function View.new(searcher_factory, input, right_input)
   vim.validate({
@@ -115,4 +112,4 @@ function View.move_cursor_in_normal(method_name)
   return msg, nil
 end
 
-return M
+return View

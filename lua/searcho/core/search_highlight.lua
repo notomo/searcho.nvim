@@ -1,11 +1,8 @@
 local HighlighterFactory = require("searcho.lib.highlight").HighlighterFactory
 local bufferlib = require("searcho.lib.buffer")
 
-local M = {}
-
 local SearchHighlight = {}
 SearchHighlight.__index = SearchHighlight
-M.SearchHighlight = SearchHighlight
 
 function SearchHighlight.new(window_id)
   local bufnr = vim.api.nvim_win_get_buf(window_id)
@@ -44,4 +41,4 @@ function SearchHighlight._enable_current_match(self, start_row, start_col, end_r
   })
 end
 
-return M
+return SearchHighlight

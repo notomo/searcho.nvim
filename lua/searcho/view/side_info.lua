@@ -1,10 +1,7 @@
 local HighlighterFactory = require("searcho.lib.highlight").HighlighterFactory
 
-local M = {}
-
 local SideInfo = {}
 SideInfo.__index = SideInfo
-M.SideInfo = SideInfo
 
 function SideInfo.new(window_id)
   vim.validate({ window_id = { window_id, "number" } })
@@ -29,4 +26,4 @@ function SideInfo.clear(self)
   self._hl_factory:reset()
 end
 
-return M
+return SideInfo

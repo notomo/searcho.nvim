@@ -1,4 +1,4 @@
-local View = require("searcho.view").View
+local View = require("searcho.view")
 local messagelib = require("searcho.lib.message")
 
 local ShowAsUserError = require("searcho.vendor.misclib.error_handler").for_show_as_user_error()

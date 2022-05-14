@@ -1,8 +1,5 @@
-local M = {}
-
 local SearchScroll = {}
 SearchScroll.__index = SearchScroll
-M.SearchScroll = SearchScroll
 
 function SearchScroll.new(window_id, scrolloff)
   vim.validate({ window_id = { window_id, "number" }, scrolloff = { scrolloff, "number" } })
@@ -23,4 +20,4 @@ function SearchScroll.set(self)
   end)
 end
 
-return M
+return SearchScroll

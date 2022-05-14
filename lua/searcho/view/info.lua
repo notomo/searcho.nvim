@@ -1,11 +1,8 @@
 local HighlighterFactory = require("searcho.lib.highlight").HighlighterFactory
 local vim = vim
 
-local M = {}
-
 local Info = {}
 Info.__index = Info
-M.Info = Info
 
 function Info.new(bufnr, window_id)
   vim.validate({ bufnr = { bufnr, "number" }, window_id = { window_id, "number" } })
@@ -54,4 +51,4 @@ function Info.msg()
   return ("%s%s %s"):format(prefix, vim.fn.getreg("/"), count_msg), count_msg
 end
 
-return M
+return Info

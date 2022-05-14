@@ -2,11 +2,8 @@ local _callbacks = {}
 
 local vim = vim
 
-local M = {}
-
 local BufferCursorMovedCallback = {}
 BufferCursorMovedCallback.__index = BufferCursorMovedCallback
-M.BufferCursorMovedCallback = BufferCursorMovedCallback
 
 function BufferCursorMovedCallback.new(bufnr, callback)
   vim.validate({
@@ -75,4 +72,4 @@ function BufferCursorMovedCallback.get(bufnr)
   return self
 end
 
-return M
+return BufferCursorMovedCallback

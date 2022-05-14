@@ -1,10 +1,7 @@
 local vim = vim
 
-local M = {}
-
 local CursorMovedCallback = {}
 CursorMovedCallback.__index = CursorMovedCallback
-M.CursorMovedCallback = CursorMovedCallback
 
 local last = nil
 
@@ -65,4 +62,4 @@ function CursorMovedCallback.get()
   return self
 end
 
-return M
+return CursorMovedCallback

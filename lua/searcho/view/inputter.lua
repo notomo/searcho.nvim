@@ -3,11 +3,8 @@ local cursorlib = require("searcho.lib.cursor")
 local wraplib = require("searcho.lib.wrap")
 local vim = vim
 
-local M = {}
-
 local Inputter = {}
 Inputter.__index = Inputter
-M.Inputter = Inputter
 
 Inputter.key_mapping_script = [[
 inoremap <buffer> <CR> <Cmd>lua require("searcho").finish()<CR>
@@ -124,4 +121,4 @@ function Inputter.close(self)
   vim.cmd("stopinsert")
 end
 
-return M
+return Inputter

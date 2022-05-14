@@ -1,20 +1,16 @@
-local Origin = require("searcho.core.origin").Origin
-local SearchResultFactory = require("searcho.core.search_result").SearchResultFactory
-local SearchResult = require("searcho.core.search_result").SearchResult
-local SearchHighlight = require("searcho.core.search_highlight").SearchHighlight
-local SearchDirection = require("searcho.core.search_direction").SearchDirection
-local SearchScroll = require("searcho.core.search_scroll").SearchScroll
-local RowRange = require("searcho.core.row_range").RowRange
-local CursorMovedCallback = require("searcho.core.cursor_moved_callback").CursorMovedCallback
-local BufferCursorMovedCallback = require("searcho.core.buffer_cursor_moved_callback").BufferCursorMovedCallback
+local Origin = require("searcho.core.origin")
+local SearchResultFactory = require("searcho.core.search_result_factory")
+local SearchHighlight = require("searcho.core.search_highlight")
+local SearchDirection = require("searcho.core.search_direction")
+local SearchScroll = require("searcho.core.search_scroll")
+local RowRange = require("searcho.core.row_range")
+local CursorMovedCallback = require("searcho.core.cursor_moved_callback")
+local BufferCursorMovedCallback = require("searcho.core.buffer_cursor_moved_callback")
 local cursorlib = require("searcho.lib.cursor")
 local vim = vim
 
-local M = {}
-
 local Searcher = {}
 Searcher.__index = Searcher
-M.Searcher = Searcher
 
 function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_pos)
   vim.validate({
@@ -36,7 +32,7 @@ function Searcher.new(window_id, is_forward, accepted_cursor_position, adjust_po
     _search_direction = SearchDirection.new(is_forward),
     _search_scroll = SearchScroll.new(window_id, 1000),
     _result_factory = SearchResultFactory.new(window_id, is_forward, accepted_cursor_position),
-    _result = SearchResult.none(),
+    _result = SearchResultFactory.none(),
     _input = "",
     _cursor_moved_callback = cursor_moved_callback,
   }
@@ -202,4 +198,4 @@ function Searcher._n_cmd(window_id, n, callback)
   end
 end
 
-return M
+return Searcher

@@ -1,8 +1,5 @@
-local M = {}
-
 local SearchDirection = {}
 SearchDirection.__index = SearchDirection
-M.SearchDirection = SearchDirection
 
 function SearchDirection.new(is_forward)
   vim.validate({ is_forward = { is_forward, "boolean" } })
@@ -30,4 +27,4 @@ function SearchDirection.set(self)
   vim.cmd("let v:searchforward = " .. self._searchforward)
 end
 
-return M
+return SearchDirection

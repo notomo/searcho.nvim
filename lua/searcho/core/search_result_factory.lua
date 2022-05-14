@@ -1,11 +1,11 @@
-local SearchDirection = require("searcho.core.search_direction").SearchDirection
+local SearchDirection = require("searcho.core.search_direction")
 local cursorlib = require("searcho.lib.cursor")
-
-local M = {}
 
 local SearchResultFactory = {}
 SearchResultFactory.__index = SearchResultFactory
-M.SearchResultFactory = SearchResultFactory
+
+local SearchResult = {}
+SearchResult.__index = SearchResult
 
 function SearchResultFactory.new(window_id, is_forward, accepted_cursor_position)
   local flag = "nz"
@@ -21,9 +21,9 @@ function SearchResultFactory.new(window_id, is_forward, accepted_cursor_position
   return setmetatable(tbl, SearchResultFactory)
 end
 
-local SearchResult = {}
-SearchResult.__index = SearchResult
-M.SearchResult = SearchResult
+function SearchResultFactory.none()
+  return SearchResult.new(nil, nil, nil)
+end
 
 function SearchResult.new(s, e, err)
   vim.validate({ s = { s, "table", true }, e = { e, "table", true }, err = { err, "string", true } })
@@ -133,4 +133,4 @@ function SearchResultFactory._matched_end(self, row, col, input)
   return { end_row, end_col }
 end
 
-return M
+return SearchResultFactory
