@@ -625,3 +625,28 @@ describe("searcho buffer name", function()
     assert.buffer_name("searcho://" .. helper.root .. "/test_buffer_name.lua")
   end)
 end)
+
+describe("searcho on temporary window", function()
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("does not raise error", function()
+    local bufnr = vim.api.nvim_create_buf(false, true)
+    local window_id = vim.api.nvim_open_win(bufnr, true, {
+      width = 50,
+      height = 10,
+      relative = "editor",
+      row = 10,
+      col = 10,
+    })
+    vim.api.nvim_create_autocmd({ "WinLeave" }, {
+      buffer = 0,
+      once = true,
+      callback = function()
+        vim.api.nvim_win_close(window_id, true)
+      end,
+    })
+
+    searcho.forward("target")
+  end)
+end)

@@ -22,14 +22,25 @@ function View.new(searcher_factory, input, right_input)
   local info = Info.new(inputter.bufnr, window_id)
   local side_info = SideInfo.new(window_id)
 
+  local tbl = {
+    _inputter = inputter,
+    _searcher = searcher,
+    _info = info,
+    _side_info = side_info,
+  }
+  local self = setmetatable(tbl, View)
+
   inputter:open(function(line)
+    if not vim.api.nvim_win_is_valid(window_id) then
+      return vim.schedule(function()
+        self:close()
+      end)
+    end
+
     searcher:execute(line)
     local msg = info:show()
     side_info:show(msg)
   end, input, right_input)
-
-  local tbl = { _inputter = inputter, _searcher = searcher, _info = info, _side_info = side_info }
-  local self = setmetatable(tbl, View)
 
   views[inputter.window_id] = self
 end

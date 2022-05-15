@@ -145,6 +145,9 @@ function Searcher.finish(self, callback)
 end
 
 function Searcher.cancel(self)
+  if not vim.api.nvim_win_is_valid(self._window_id) then
+    return
+  end
   self._highlight:reset()
   self._origin:restore()
 end
