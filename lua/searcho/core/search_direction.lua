@@ -24,7 +24,7 @@ function SearchDirection.is_forward(self)
 end
 
 function SearchDirection.set(self)
-  vim.cmd("let v:searchforward = " .. self._searchforward)
+  vim.cmd.let({ args = { "v:searchforward", "=", tostring(self._searchforward) } })
 end
 
 return SearchDirection

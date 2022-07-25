@@ -81,7 +81,7 @@ function Inputter.open(self, callback, default_input, default_right_input)
     end),
   })
   self:_set_line(default_input .. default_right_input)
-  vim.cmd("startinsert!")
+  vim.cmd.startinsert({ bang = true })
   cursorlib.to_left_by(window_id, default_right_input)
 end
 
@@ -118,7 +118,7 @@ function Inputter.close(self)
   -- NOTICE: because sometimes the buffer is not deleted.
   vim.api.nvim_buf_delete(self.bufnr, { force = true })
   windowlib.safe_close(self.window_id)
-  vim.cmd("stopinsert")
+  vim.cmd.stopinsert()
 end
 
 return Inputter

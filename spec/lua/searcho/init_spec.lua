@@ -24,12 +24,12 @@ target1
 target2
 
 target3]])
-    vim.cmd("normal! j")
+    vim.cmd.normal({ args = { "j" }, bang = true })
 
     searcho.forward("target")
     searcho.finish()
-    vim.cmd("normal! 0") -- HACK
-    vim.cmd("normal! n")
+    vim.cmd.normal({ args = { "0" }, bang = true }) -- HACK
+    vim.cmd.normal({ args = { "n" }, bang = true })
 
     assert.current_line("target3")
   end)
@@ -75,7 +75,7 @@ describe("searcho.backward()", function()
 target
 
 ]])
-    vim.cmd("normal! G")
+    vim.cmd.normal({ args = { "G" }, bang = true })
 
     searcho.backward("target")
     searcho.finish()
@@ -90,12 +90,12 @@ target1
 target2
 
 target3]])
-    vim.cmd("normal! G")
+    vim.cmd.normal({ args = { "G" }, bang = true })
 
     searcho.backward("target")
     searcho.finish()
-    vim.cmd("normal! 0") -- HACK
-    vim.cmd("normal! n")
+    vim.cmd.normal({ args = { "0" }, bang = true }) -- HACK
+    vim.cmd.normal({ args = { "n" }, bang = true })
 
     assert.current_line("target1")
   end)
@@ -149,7 +149,7 @@ describe("searcho.backward_word()", function()
 
  target 3
 ]])
-    vim.cmd("normal! l")
+    vim.cmd.normal({ args = { "l" }, bang = true })
 
     searcho.backward_word()
     searcho.finish()
@@ -165,11 +165,11 @@ target 2
 
 target 3
 ]])
-    vim.cmd("normal! 2j")
+    vim.cmd.normal({ args = { "2j" }, bang = true })
 
     searcho.backward_word()
     searcho.finish()
-    vim.cmd("normal! 0") -- HACK
+    vim.cmd.normal({ args = { "0" }, bang = true }) -- HACK
     searcho.next()
 
     assert.current_line("target 1")
@@ -267,11 +267,11 @@ target1
 
 target2
 ]])
-    vim.cmd("normal! $")
+    vim.cmd.normal({ args = { "$" }, bang = true })
 
     searcho.forward("target")
     searcho.finish()
-    vim.cmd("normal! " .. vim.api.nvim_eval('"\\<C-o>"'))
+    vim.cmd.normal({ args = { vim.api.nvim_eval('"\\<C-o>"') }, bang = true })
 
     assert.current_line("target1")
   end)
@@ -303,7 +303,7 @@ target2
 
 target3
 ]])
-    vim.cmd("normal! j")
+    vim.cmd.normal({ args = { "j" }, bang = true })
 
     searcho.backward("target")
     searcho.next_match()
@@ -336,7 +336,7 @@ target2
 
 target3
 ]])
-    vim.cmd("normal! j")
+    vim.cmd.normal({ args = { "j" }, bang = true })
 
     searcho.forward("target")
     searcho.previous_match()
@@ -354,7 +354,7 @@ target1
 target2
 
 ]])
-    vim.cmd("normal! G")
+    vim.cmd.normal({ args = { "G" }, bang = true })
 
     searcho.backward("target")
     searcho.previous_match()
@@ -411,7 +411,7 @@ target1
 
 target2
 ]])
-    vim.cmd("normal! j")
+    vim.cmd.normal({ args = { "j" }, bang = true })
 
     searcho.backward("target")
     searcho.next_page()
@@ -448,7 +448,7 @@ target1
 
 
 target2]])
-    vim.cmd("normal! Gk")
+    vim.cmd.normal({ args = { "Gk" }, bang = true })
 
     searcho.forward("target")
     searcho.previous_page()
@@ -471,7 +471,7 @@ target1
 target2
 
 ]])
-    vim.cmd("normal! G")
+    vim.cmd.normal({ args = { "G" }, bang = true })
 
     searcho.backward("target")
     searcho.previous_page()
@@ -520,7 +520,7 @@ target
     searcho.finish()
 
     searcho.next()
-    vim.cmd("tabedit")
+    vim.cmd.tabedit()
   end)
 end)
 
@@ -534,11 +534,11 @@ target1
 
 target2
 ]])
-    vim.cmd("normal! j")
+    vim.cmd.normal({ args = { "j" }, bang = true })
     searcho.forward("target")
     searcho.finish()
 
-    vim.cmd("normal! 0") -- HACK
+    vim.cmd.normal({ args = { "0" }, bang = true }) -- HACK
     searcho.previous()
     helper.cursor_moved()
 
@@ -564,7 +564,7 @@ bar
     searcho.forward()
     helper.input("bar")
     searcho.finish()
-    vim.cmd("normal! gg")
+    vim.cmd.normal({ args = { "gg" }, bang = true })
 
     searcho.forward()
     searcho.backward_history()
@@ -589,7 +589,7 @@ foo
     searcho.forward()
     helper.input("foo")
     searcho.finish()
-    vim.cmd("normal! gg")
+    vim.cmd.normal({ args = { "gg" }, bang = true })
 
     searcho.forward()
     searcho.backward_history()

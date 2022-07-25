@@ -11,7 +11,7 @@ function SearchHighlight.new(window_id)
 end
 
 function SearchHighlight.reset(self)
-  vim.cmd("nohlsearch")
+  vim.cmd.nohlsearch()
   self:reset_current_match()
 end
 
@@ -29,7 +29,7 @@ function SearchHighlight._enable_match(_, input)
   if input == "\\v" then
     return
   end
-  vim.cmd("let &hlsearch = &hlsearch")
+  vim.cmd.let({ args = { "&hlsearch", "=", "&hlsearch" } })
 end
 
 function SearchHighlight._enable_current_match(self, start_row, start_col, end_row, end_col)

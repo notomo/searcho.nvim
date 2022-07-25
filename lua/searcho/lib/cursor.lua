@@ -119,7 +119,7 @@ function M.add_to_jumplist(window_id, position)
   local origin = vim.api.nvim_win_get_cursor(window_id)
   vim.api.nvim_win_set_cursor(window_id, position)
   vim.api.nvim_win_call(window_id, function()
-    vim.cmd("normal! m'")
+    vim.cmd.normal({ args = { "m'" }, bang = true })
   end)
   vim.api.nvim_win_set_cursor(window_id, origin)
 end

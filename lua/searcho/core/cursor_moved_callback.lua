@@ -13,7 +13,7 @@ function CursorMovedCallback.new()
     _callback = function()
       -- :h autocmd-searchpat
       vim.schedule(function()
-        vim.cmd("nohlsearch")
+        vim.cmd.nohlsearch()
       end)
     end,
   }

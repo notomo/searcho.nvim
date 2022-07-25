@@ -83,7 +83,7 @@ function SearchResultFactory._search(self, input)
     return nil, nil, err
   end
   vim.fn.histdel("search", -1)
-  vim.cmd("nohlsearch")
+  vim.cmd.nohlsearch()
 
   local row, column = unpack(vim.api.nvim_win_get_cursor(self._window_id))
   if input == "\\v\\n" or input == "\\n" then
@@ -101,9 +101,17 @@ function SearchResultFactory.match(self, row, col, next_cmd, prev_cmd, input)
 
   vim.api.nvim_win_call(self._window_id, function()
     if SearchDirection.current():is_forward() then
-      return vim.cmd("silent! noautocmd keepjumps normal! " .. next_cmd)
+      return vim.cmd.normal({
+        args = { next_cmd },
+        mods = { silent = true, emsg_silent = true, noautocmd = true, keepjumps = true },
+        bang = true,
+      })
     end
-    vim.cmd("silent! noautocmd keepjumps normal! " .. prev_cmd)
+    vim.cmd.normal({
+      args = { prev_cmd },
+      mods = { silent = true, emsg_silent = true, noautocmd = true, keepjumps = true },
+      bang = true,
+    })
   end)
 
   local start_row, start_col = unpack(vim.api.nvim_win_get_cursor(self._window_id))
