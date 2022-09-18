@@ -1,4 +1,4 @@
-local HighlighterFactory = require("searcho.lib.highlight").HighlighterFactory
+local Decorator = require("searcho.lib.decorator")
 local vim = vim
 
 local Info = {}
@@ -6,16 +6,19 @@ Info.__index = Info
 
 function Info.new(bufnr, window_id)
   vim.validate({ bufnr = { bufnr, "number" }, window_id = { window_id, "number" } })
-  local tbl = { _window_id = window_id, _hl_factory = HighlighterFactory.new("searcho", bufnr) }
+  local tbl = {
+    _window_id = window_id,
+    _decorator_factory = Decorator.factory("searcho", bufnr),
+  }
   return setmetatable(tbl, Info)
 end
 
 function Info.show(self)
-  local highlighter = self._hl_factory:reset()
+  local decorator = self._decorator_factory:reset()
   local msg = vim.api.nvim_win_call(self._window_id, function()
     return self:_count()
   end)
-  highlighter:add_virtual({ { msg, "Comment" } }, 0, 0, {})
+  decorator:add_virtual_text(0, 0, { { msg, "Comment" } }, {})
   return msg
 end
 

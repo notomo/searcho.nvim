@@ -1,4 +1,4 @@
-local HighlighterFactory = require("searcho.lib.highlight").HighlighterFactory
+local Decorator = require("searcho.lib.decorator")
 local bufferlib = require("searcho.lib.buffer")
 
 local SearchHighlight = {}
@@ -6,7 +6,10 @@ SearchHighlight.__index = SearchHighlight
 
 function SearchHighlight.new(window_id)
   local bufnr = vim.api.nvim_win_get_buf(window_id)
-  local tbl = { _hl_factory = HighlighterFactory.new("searcho", bufnr), _bufnr = bufnr }
+  local tbl = {
+    _decorator_factory = Decorator.factory("searcho", bufnr),
+    _bufnr = bufnr,
+  }
   return setmetatable(tbl, SearchHighlight)
 end
 
@@ -16,7 +19,7 @@ function SearchHighlight.reset(self)
 end
 
 function SearchHighlight.reset_current_match(self)
-  return self._hl_factory:reset()
+  return self._decorator_factory:reset()
 end
 
 function SearchHighlight.enable(self, input, start_row, start_col, end_row, end_col)
@@ -33,10 +36,10 @@ function SearchHighlight._enable_match(_, input)
 end
 
 function SearchHighlight._enable_current_match(self, start_row, start_col, end_row, end_col)
-  local highlighter = self:reset_current_match()
+  local decorator = self:reset_current_match()
   local text = bufferlib.get_text(self._bufnr, start_row - 1, start_col, end_row - 1, end_col)
   local strs = vim.split(text, "\n", true)
-  highlighter:add_ranged_virtual(strs, "CurSearch", start_row - 1, start_col - 1, {
+  decorator:add_virtual_text_range(strs, "CurSearch", start_row - 1, start_col - 1, {
     virt_text_pos = "overlay",
   })
 end
