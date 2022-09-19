@@ -1,6 +1,5 @@
 local windowlib = require("searcho.vendor.misclib.window")
 local cursorlib = require("searcho.lib.cursor")
-local wraplib = require("searcho.lib.wrap")
 local vim = vim
 
 local Inputter = {}
@@ -68,7 +67,7 @@ function Inputter.open(self, callback, default_input, default_right_input)
   })
 
   vim.api.nvim_buf_attach(self.bufnr, false, {
-    on_lines = wraplib.traceback(function()
+    on_lines = function()
       local input_line = self:_get_line()
       callback(input_line)
 
@@ -78,7 +77,7 @@ function Inputter.open(self, callback, default_input, default_right_input)
       vim.schedule(function()
         vim.api.nvim_buf_set_lines(self.bufnr, 1, -1, false, {})
       end)
-    end),
+    end,
   })
   self:_set_line(default_input .. default_right_input)
   vim.cmd.startinsert({ bang = true })
