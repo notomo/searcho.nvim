@@ -22,15 +22,19 @@ function ShowError.move_cursor(method_name)
   return view:move_cursor(method_name)
 end
 
-function ShowAsUserError.move_cursor_in_normal(method_name)
+function ShowAsUserError.move_cursor_in_normal(method_name, opts)
+  opts = opts or {}
+
   local msg, err = View.move_cursor_in_normal(method_name)
   if err then
     return err
   end
-  return messagelib.raw_info(msg)
+  return messagelib.raw_info(msg, opts.add_to_history)
 end
 
-function ShowError.finish()
+function ShowError.finish(opts)
+  opts = opts or {}
+
   local view = View.current()
   if not view then
     return "no state"
@@ -39,7 +43,7 @@ function ShowError.finish()
   if err then
     return err
   end
-  return messagelib.raw_info(msg)
+  return messagelib.raw_info(msg, opts.add_to_history)
 end
 
 function ShowError.cancel()

@@ -16,20 +16,20 @@ function searcho.backward_word(opts)
   require("searcho.command").search_word("backward_word", opts)
 end
 
-function searcho.finish()
-  require("searcho.command").finish()
+function searcho.finish(opts)
+  require("searcho.command").finish(opts)
 end
 
 function searcho.cancel()
   require("searcho.command").cancel()
 end
 
-function searcho.next()
-  require("searcho.command").move_cursor_in_normal("next")
+function searcho.next(opts)
+  require("searcho.command").move_cursor_in_normal("next", opts)
 end
 
-function searcho.previous()
-  require("searcho.command").move_cursor_in_normal("previous")
+function searcho.previous(opts)
+  require("searcho.command").move_cursor_in_normal("previous", opts)
 end
 
 function searcho.next_match()

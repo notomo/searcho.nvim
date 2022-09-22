@@ -18,9 +18,10 @@ function M.info(msg)
   vim.api.nvim_echo({ { prefix .. msg } }, true, {})
 end
 
-function M.raw_info(msg)
+function M.raw_info(msg, add_to_history)
+  add_to_history = add_to_history or false
   vim.validate({ msg = { msg, "string" } })
-  vim.api.nvim_echo({ { msg } }, true, {})
+  vim.api.nvim_echo({ { msg } }, add_to_history, {})
 end
 
 function M.vim_warn(msg)

@@ -224,7 +224,7 @@ target
 ]])
     searcho.forward("target")
 
-    searcho.finish()
+    searcho.finish({ add_to_history = true })
 
     assert.exists_message("/target [1/2]")
   end)
@@ -505,7 +505,7 @@ target2
     searcho.forward("target")
     searcho.finish()
 
-    searcho.next()
+    searcho.next({ add_to_history = true })
     helper.cursor_moved()
 
     assert.current_line("target2")
