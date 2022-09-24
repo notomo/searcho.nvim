@@ -26,32 +26,7 @@ function helper.cursor_moved()
 end
 
 local asserts = require("vusted.assert").asserts
-
-asserts.create("current_line"):register_eq(function()
-  return vim.fn.getline(".")
-end)
-
-asserts.create("buffer_name"):register_eq(function()
-  return vim.fn.bufname("%")
-end)
-
-asserts.create("cursor_word"):register_eq(function()
-  return vim.fn.expand("<cword>")
-end)
-
-asserts.create("exists_message"):register(function(self)
-  return function(_, args)
-    local expected = args[1]
-    self:set_positive(("`%s` not found message"):format(expected))
-    self:set_negative(("`%s` found message"):format(expected))
-    local messages = vim.split(vim.api.nvim_exec("messages", true), "\n")
-    for _, msg in ipairs(messages) do
-      if msg:find(expected, 1, true) then
-        return true
-      end
-    end
-    return false
-  end
-end)
+local asserters = require(plugin_name .. ".vendor.assertlib").list()
+require(plugin_name .. ".vendor.misclib.test.assert").register(asserts.create, asserters)
 
 return helper

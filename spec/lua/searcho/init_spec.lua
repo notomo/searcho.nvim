@@ -226,14 +226,14 @@ target
 
     searcho.finish({ add_to_history = true })
 
-    assert.exists_message("/target [1/2]")
+    assert.exists_message("/target %[1/2%]")
   end)
 
   it("shows regexp error", function()
     searcho.forward("\\z")
     searcho.finish()
 
-    assert.exists_message("(NFA) Unknown operator")
+    assert.exists_message("%(NFA%) Unknown operator")
   end)
 
   it("shows pattern not found error", function()
@@ -509,7 +509,7 @@ target2
     helper.cursor_moved()
 
     assert.current_line("target2")
-    assert.exists_message("/target [2/2]")
+    assert.exists_message("/target %[2/2%]")
   end)
 
   it("does not raise error on buf leave", function()
