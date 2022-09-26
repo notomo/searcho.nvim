@@ -614,7 +614,7 @@ describe("searcho buffer name", function()
   it("is the same with default scratch buffer name", function()
     searcho.forward("target")
 
-    assert.buffer_name("searcho://[Scratch]")
+    assert.buffer_full_name("searcho://[Scratch]")
   end)
 
   it("suffix is the same with origin buffer name", function()
@@ -622,7 +622,7 @@ describe("searcho buffer name", function()
 
     searcho.forward("target")
 
-    assert.buffer_name("searcho://" .. helper.root .. "/test_buffer_name.lua")
+    assert.buffer_full_name("searcho://" .. helper.root .. "/test_buffer_name.lua")
   end)
 end)
 
