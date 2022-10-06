@@ -1,4 +1,4 @@
-local helper = require("searcho.lib.testlib.helper")
+local helper = require("searcho.test.helper")
 local searcho = helper.require("searcho")
 
 describe("searcho.forward()", function()
