@@ -9,6 +9,7 @@ function SideInfo.new(window_id)
   local tbl = {
     _decorator_factory = Decorator.factory("searcho_side_info", bufnr),
     _window_id = window_id,
+    _bufnr = bufnr,
   }
   return setmetatable(tbl, SideInfo)
 end
@@ -23,6 +24,9 @@ function SideInfo.show(self, msg)
 end
 
 function SideInfo.clear(self)
+  if not vim.api.nvim_buf_is_valid(self._bufnr) then
+    return
+  end
   self._decorator_factory:reset()
 end
 

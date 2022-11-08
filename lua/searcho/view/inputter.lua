@@ -114,8 +114,10 @@ function Inputter.save_history(self)
 end
 
 function Inputter.close(self)
-  -- NOTICE: because sometimes the buffer is not deleted.
-  vim.api.nvim_buf_delete(self.bufnr, { force = true })
+  if vim.api.nvim_buf_is_valid(self.bufnr) then
+    -- NOTICE: because sometimes the buffer is not deleted.
+    vim.api.nvim_buf_delete(self.bufnr, { force = true })
+  end
   windowlib.safe_close(self.window_id)
   vim.cmd.stopinsert()
 end
