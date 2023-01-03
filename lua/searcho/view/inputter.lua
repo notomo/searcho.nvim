@@ -85,7 +85,7 @@ function Inputter.open(self, callback, default_input, default_right_input)
 end
 
 function Inputter._set_line(self, line)
-  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, { vim.split(line, "\n", true)[1] })
+  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, { vim.split(line, "\n", { plain = true })[1] })
 end
 
 function Inputter._get_line(self)

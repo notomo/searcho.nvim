@@ -38,7 +38,7 @@ end
 function SearchHighlight._enable_current_match(self, start_row, start_col, end_row, end_col)
   local decorator = self:reset_current_match()
   local text = bufferlib.get_text(self._bufnr, start_row - 1, start_col, end_row - 1, end_col)
-  local strs = vim.split(text, "\n", true)
+  local strs = vim.split(text, "\n", { plain = true })
   decorator:add_virtual_text_range(strs, "CurSearch", start_row - 1, start_col - 1, {
     virt_text_pos = "overlay",
   })
