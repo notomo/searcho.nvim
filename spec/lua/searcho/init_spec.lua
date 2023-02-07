@@ -275,6 +275,23 @@ target2
 
     assert.current_line("target1")
   end)
+
+  it("can go back to visual mode", function()
+    helper.set_lines([[
+hoge
+foo
+]])
+
+    vim.cmd.normal({ args = { "V" }, bang = true })
+    searcho.forward("foo")
+    searcho.finish()
+
+    assert.mode("V")
+    assert.current_line("foo")
+
+    vim.cmd.normal({ args = { "o" }, bang = true })
+    assert.current_line("hoge")
+  end)
 end)
 
 describe("searcho.next_match()", function()

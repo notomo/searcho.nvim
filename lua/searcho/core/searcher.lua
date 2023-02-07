@@ -141,7 +141,11 @@ function Searcher.finish(self, callback)
   local buffer_cursor_moved_callback = BufferCursorMovedCallback.new(bufnr, callback)
   buffer_cursor_moved_callback:setup()
 
-  return self._result.err
+  return {
+    origin = self._origin.position,
+    current = vim.api.nvim_win_get_cursor(self._window_id),
+  },
+    self._result.err
 end
 
 function Searcher.cancel(self)

@@ -15,6 +15,8 @@ function View.new(searcher_factory, input, right_input)
     right_input = { right_input, "string", true },
   })
 
+  local was_visual_mode, _ = require("searcho.vendor.misclib.visual_mode").leave()
+
   local window_id = vim.api.nvim_get_current_win()
   local bufnr = vim.api.nvim_get_current_buf()
   local searcher = searcher_factory(window_id)
@@ -27,6 +29,9 @@ function View.new(searcher_factory, input, right_input)
     _searcher = searcher,
     _info = info,
     _side_info = side_info,
+    _was_visual_mode = was_visual_mode,
+    _bufnr = bufnr,
+    _window_id = window_id,
   }
   local self = setmetatable(tbl, View)
 
@@ -70,11 +75,17 @@ function View.finish(self)
   self._inputter:save_history()
   self:close()
 
-  local err = self._searcher:finish(function()
+  local positions, err = self._searcher:finish(function()
     self._side_info:clear()
   end)
   if err then
     return nil, err
+  end
+
+  if self._was_visual_mode then
+    vim.api.nvim_buf_set_mark(self._bufnr, "<", positions.origin[1], positions.origin[2], {})
+    vim.api.nvim_buf_set_mark(self._bufnr, ">", positions.current[1], positions.current[2], {})
+    vim.cmd.normal({ args = { "gv" }, bang = true, mods = { silent = true, emsg_silent = true, noautocmd = true } })
   end
 
   local msg, count_msg = Info.msg()
