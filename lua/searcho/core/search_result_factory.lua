@@ -78,6 +78,16 @@ function SearchResultFactory._search(self, input)
   vim.api.nvim_win_call(self._window_id, function()
     local cmd = ("silent noautocmd keepjumps normal! %s%s%s"):format(search, vim.fn.escape(input, "/"), CR)
     ok, err = pcall(vim.cmd, cmd)
+
+    -- HACK: for too long input
+    if vim.o.columns < #input then
+      -- to close press ENTER prompt
+      local press_enter = vim.api.nvim_replace_termcodes("<Cmd><CR>", true, false, true)
+      vim.api.nvim_feedkeys(press_enter, "nt", true)
+      -- to hide press ENTER message
+      local chunks = { { "" }, { "\n" } }
+      vim.api.nvim_echo(chunks, false, {})
+    end
   end)
   if not ok then
     return nil, nil, err

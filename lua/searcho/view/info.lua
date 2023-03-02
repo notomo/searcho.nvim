@@ -51,7 +51,10 @@ function Info.msg()
     prefix = "?"
   end
   local count_msg = Info._count()
-  return ("%s%s %s"):format(prefix, vim.fn.getreg("/"), count_msg), count_msg
+  local input = vim.fn.getreg("/")
+  local pattern = input:sub(1, vim.o.columns * 0.9)
+  local ellipsis = pattern == input and "" or ".."
+  return ("%s%s%s %s"):format(prefix, pattern, ellipsis, count_msg), count_msg
 end
 
 return Info
