@@ -25,7 +25,7 @@ function Inputter.new(origin_bufnr)
     vim.api.nvim_buf_delete(old, { force = true })
   end
   vim.api.nvim_buf_call(bufnr, function()
-    vim.api.nvim_exec(Inputter.key_mapping_script, false)
+    vim.cmd(Inputter.key_mapping_script)
   end)
   vim.api.nvim_buf_set_name(bufnr, name)
   vim.bo[bufnr].bufhidden = "wipe"
