@@ -31,7 +31,15 @@ function Inputter.new(origin_bufnr)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].filetype = "searcho"
 
-  local tbl = { window_id = nil, bufnr = bufnr, _history_offset = 0 }
+  local tbl = {
+    bufnr = bufnr,
+    window_id = nil,
+    _history_store = require("searcho.vendor.misclib.history").new("search", {
+      filter = function(history, before)
+        return history ~= "" and history ~= before
+      end,
+    }),
+  }
   return setmetatable(tbl, Inputter)
 end
 
@@ -79,7 +87,10 @@ function Inputter.open(self, callback, default_input, default_right_input)
       end)
     end,
   })
-  self:_set_line(default_input .. default_right_input)
+
+  local default_line = default_input .. default_right_input
+  self:_set_line(default_line)
+
   vim.cmd.startinsert({ bang = true })
   cursorlib.to_left_by(window_id, default_right_input)
 end
@@ -93,24 +104,17 @@ function Inputter._get_line(self)
 end
 
 function Inputter.recall_history(self, offset)
-  if self._history_offset == 0 then
-    self:save_history()
+  local current_line = self:_get_line()
+  local history = self._history_store:recall(offset, current_line)
+  if history then
+    self:_set_line(history)
+    cursorlib.set_column(#history + 1)
   end
-
-  local next_index = self._history_offset + offset
-  next_index = math.min(next_index, 0)
-  next_index = math.max(next_index, -vim.fn.histnr("search"))
-
-  local history = vim.fn.histget("search", next_index)
-  self:_set_line(history)
-  cursorlib.set_column(#history + 1)
-
-  self._history_offset = next_index
 end
 
 function Inputter.save_history(self)
-  local input_line = self:_get_line()
-  vim.fn.histadd("search", input_line)
+  local current_line = self:_get_line()
+  self._history_store:save(current_line)
 end
 
 function Inputter.close(self)

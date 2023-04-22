@@ -89,10 +89,10 @@ function SearchResultFactory._search(self, input)
       vim.api.nvim_echo(chunks, false, {})
     end
   end)
+  vim.fn.histdel("search", -1)
   if not ok then
     return nil, nil, err
   end
-  vim.fn.histdel("search", -1)
   vim.cmd.nohlsearch()
 
   local row, column = unpack(vim.api.nvim_win_get_cursor(self._window_id))
