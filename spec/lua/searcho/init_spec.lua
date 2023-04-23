@@ -616,6 +616,8 @@ foo
   end)
 
   it("adds search history", function()
+    vim.fn.histadd("/", "already")
+
     searcho.forward()
     helper.input("recall_history")
     searcho.backward_history()
