@@ -82,7 +82,7 @@ function SearchResultFactory._search(self, input)
     -- HACK: for too long input
     if vim.o.columns < #input then
       -- to close press ENTER prompt
-      local press_enter = vim.api.nvim_replace_termcodes("<Cmd><CR>", true, false, true)
+      local press_enter = vim.keycode("<Cmd><CR>")
       vim.api.nvim_feedkeys(press_enter, "nt", true)
       -- to hide press ENTER message
       local chunks = { { "" }, { "\n" } }
