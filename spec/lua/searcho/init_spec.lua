@@ -25,6 +25,26 @@ target 3
     assert.current_line("target 2")
   end)
 
+  it("stays in the cursor word even if cursor is in the top of the buffer", function()
+    helper.set_lines([[
+target 1
+
+target 2
+
+target 3
+]])
+    vim.cmd.normal({ args = { "l" }, bang = true })
+
+    searcho.word_forward()
+    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+
+    assert.current_line("target 1")
+
+    vim.cmd.normal({ args = { "n" }, bang = true })
+
+    assert.current_line("target 2")
+  end)
+
   it("can use with empty", function()
     vim.fn.setreg("/", ".*")
     searcho.word_forward()
@@ -55,6 +75,25 @@ target 3
     assert.current_line("target 2")
   end)
 
+  it("stays in the cursor word even if cursor is in the bottom of the buffer", function()
+    helper.set_lines([[
+1 target
+
+2 target
+
+3 target]])
+    vim.cmd.normal({ args = { "G$" }, bang = true })
+
+    searcho.word_backward()
+    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+
+    assert.current_line("3 target")
+
+    vim.cmd.normal({ args = { "n" }, bang = true })
+
+    assert.current_line("2 target")
+  end)
+
   it("can use with empty", function()
     vim.fn.setreg("/", ".*")
     searcho.word_forward()
@@ -79,7 +118,7 @@ target2
       return searcho.normal("n")
     end, { buffer = true, expr = true })
     searcho.normal("n")
-    vim.api.nvim_feedkeys(key, "rx", true)
+    vim.api.nvim_feedkeys(key, "tx", true)
     helper.cursor_moved()
 
     assert.current_line("target1")

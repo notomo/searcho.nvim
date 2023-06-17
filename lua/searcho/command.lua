@@ -31,16 +31,15 @@ function M.word_forward()
   if word ~= "" then
     require("searcho.lib.view").with_restore(function()
       vim.cmd.normal({ args = { "*Nh" }, bang = true, mods = { keepjumps = true } })
+
+      local cursor = vim.api.nvim_win_get_cursor(0)
+      if cursor[1] == 1 and cursor[2] == 0 then
+        vim.cmd.normal({ args = { "G$" }, bang = true, mods = { keepjumps = true } })
+      end
     end)
   end
 
-  local search_command = "/"
-  local cursor = vim.api.nvim_win_get_cursor(0)
-  if cursor[1] == 1 and cursor[2] == 0 then
-    search_command = search_command .. vim.keycode("<C-t>")
-  end
-
-  vim.api.nvim_feedkeys(search_command .. word, "t", true)
+  vim.api.nvim_feedkeys("/" .. word, "t", true)
 end
 
 function M.word_backward()
@@ -50,11 +49,15 @@ function M.word_backward()
   if word ~= "" then
     require("searcho.lib.view").with_restore(function()
       vim.cmd.normal({ args = { "#Ne" }, bang = true, mods = { keepjumps = true } })
+
+      local last_row = vim.api.nvim_buf_line_count(0)
+      if _original_cursor[1] == last_row and _original_cursor[2] == vim.fn.col("$") - 2 then
+        vim.cmd.normal({ args = { "gg0" }, bang = true, mods = { keepjumps = true } })
+      end
     end)
   end
 
-  local search_command = "?"
-  vim.api.nvim_feedkeys(search_command .. word, "t", true)
+  vim.api.nvim_feedkeys("?" .. word, "t", true)
 end
 
 function M.normal(cmd)
