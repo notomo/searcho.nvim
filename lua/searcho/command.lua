@@ -42,6 +42,12 @@ function M.word(typ)
     forward = "/",
     backward = "?",
   })[typ]
+
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  if typ == "forward" and cursor[1] == 1 and cursor[2] == 0 then
+    search_command = search_command .. vim.keycode("<C-t>")
+  end
+
   vim.api.nvim_feedkeys(search_command .. word, "t", true)
 end
 
