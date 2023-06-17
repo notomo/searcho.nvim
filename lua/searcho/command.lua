@@ -1,76 +1,76 @@
-local View = require("searcho.view")
-local messagelib = require("searcho.lib.message")
-
 local M = {}
 
-function M.search(method_name, input)
-  View.open_searcher(method_name, input)
+local for_search = require("searcho.lib.autocmd").for_search
+
+local _original_cursor
+vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
+  group = vim.api.nvim_create_augroup("searcho", {}),
+  pattern = { "*" },
+  callback = for_search(function()
+    if not vim.v.event.abort then
+      require("searcho.core.search_highlight").disable_on_next_moved()
+      return
+    end
+
+    require("searcho.core.search_highlight").disable()
+
+    local window_id = vim.api.nvim_get_current_win()
+    if _original_cursor then
+      vim.schedule(function()
+        vim.api.nvim_win_set_cursor(window_id, _original_cursor)
+        _original_cursor = nil
+      end)
+    end
+  end),
+})
+
+function M.word(typ)
+  _original_cursor = vim.api.nvim_win_get_cursor(0)
+
+  local word = vim.fn.expand("<cword>")
+  if word ~= "" then
+    local adjust_command = ({
+      forward = "*Nh",
+      backward = "#Ne",
+    })[typ]
+    require("searcho.lib.view").with_restore(function()
+      vim.cmd.normal({ args = { adjust_command }, bang = true, mods = { keepjumps = true } })
+    end)
+  end
+
+  local search_command = ({
+    forward = "/",
+    backward = "?",
+  })[typ]
+  vim.api.nvim_feedkeys(search_command .. word, "t", true)
 end
 
-function M.search_word(method_name, opts)
-  vim.validate({ opts = { opts, "table", true } })
-  opts = opts or {}
-  View.open_word_searcher(method_name, opts.left, opts.right)
+function M.normal(cmd)
+  require("searcho.core.search_highlight").disable_on_next_moved()
+  return cmd
 end
 
-function M.move_cursor(method_name)
-  local view = View.current()
-  if not view then
-    messagelib.error("no state")
-  end
-  view:move_cursor(method_name)
-end
+function M.setup_keymaps(keymap_func)
+  local group = vim.api.nvim_create_augroup("searcho_keymap", {})
+  local cleanup_keymaps = function() end
 
-function M.move_cursor_in_normal(method_name, opts)
-  opts = opts or {}
+  vim.api.nvim_create_autocmd({ "CmdlineEnter" }, {
+    group = group,
+    pattern = { "*" },
+    callback = for_search(function()
+      local custom_vim, cleanup = require("searcho.lib.keymap").with_cleanup()
+      cleanup_keymaps = cleanup
+      keymap_func(custom_vim)
+    end),
+  })
 
-  local msg, err = View.move_cursor_in_normal(method_name)
-  if err then
-    messagelib.warn(err)
-    return
-  end
-  messagelib.raw_info(msg, opts.add_to_history)
-end
-
-function M.finish(opts)
-  opts = opts or {}
-
-  local view = View.current()
-  if not view then
-    messagelib.error("no state")
-  end
-  local msg, err = view:finish()
-  if err then
-    messagelib.warn(err)
-    return
-  end
-  messagelib.raw_info(msg, opts.add_to_history)
-end
-
-function M.cancel()
-  local view = View.current()
-  if not view then
-    return
-  end
-  view:cancel()
-end
-
-function M.recall_history(offset)
-  vim.validate({ offset = { offset, "number" } })
-  local view = View.current()
-  if not view then
-    messagelib.error("no state")
-  end
-  view:recall_history(offset)
-end
-
-function M.close(id)
-  vim.validate({ id = { id, "number" } })
-  local view = View.get(id)
-  if not view then
-    return
-  end
-  view:cancel()
+  vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
+    group = group,
+    pattern = { "*" },
+    callback = for_search(function()
+      cleanup_keymaps()
+    end),
+  })
 end
 
 return M
