@@ -24,7 +24,19 @@ vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
   end),
 })
 
-function M.word_forward()
+local default_word_opts = {
+  convert = function(word)
+    return word
+  end,
+}
+local to_word_opts = function(raw_opts)
+  raw_opts = raw_opts or {}
+  return vim.tbl_deep_extend("force", default_word_opts, raw_opts)
+end
+
+function M.word_forward(raw_opts)
+  local opts = to_word_opts(raw_opts)
+
   _original_cursor = vim.api.nvim_win_get_cursor(0)
 
   local word = vim.fn.expand("<cword>")
@@ -39,10 +51,12 @@ function M.word_forward()
     end)
   end
 
-  vim.api.nvim_feedkeys("/" .. word, "t", true)
+  vim.api.nvim_feedkeys("/" .. opts.convert(word), "t", true)
 end
 
-function M.word_backward()
+function M.word_backward(raw_opts)
+  local opts = to_word_opts(raw_opts)
+
   _original_cursor = vim.api.nvim_win_get_cursor(0)
 
   local word = vim.fn.expand("<cword>")
@@ -57,7 +71,7 @@ function M.word_backward()
     end)
   end
 
-  vim.api.nvim_feedkeys("?" .. word, "t", true)
+  vim.api.nvim_feedkeys("?" .. opts.convert(word), "t", true)
 end
 
 function M.normal(cmd)

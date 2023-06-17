@@ -50,6 +50,27 @@ target 3
     searcho.word_forward()
     vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
   end)
+
+  it("can convert search pattern", function()
+    helper.set_lines([[
+target 1
+
+target2
+
+target 3
+]])
+
+    searcho.word_forward({
+      convert = function(word)
+        return "\\v<" .. word .. ">"
+      end,
+    })
+    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+
+    vim.cmd.normal({ args = { "n" }, bang = true })
+
+    assert.current_line("target 3")
+  end)
 end)
 
 describe("searcho.backward_word()", function()
@@ -98,6 +119,27 @@ target 3
     vim.fn.setreg("/", ".*")
     searcho.word_forward()
     vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+  end)
+
+  it("can convert search pattern", function()
+    helper.set_lines([[
+target 1
+
+target2
+
+target 3]])
+    vim.cmd.normal({ args = { "G" }, bang = true })
+
+    searcho.word_backward({
+      convert = function(word)
+        return "\\v<" .. word .. ">"
+      end,
+    })
+    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+
+    vim.cmd.normal({ args = { "n" }, bang = true })
+
+    assert.current_line("target 1")
   end)
 end)
 
