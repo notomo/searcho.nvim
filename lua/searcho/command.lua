@@ -15,12 +15,20 @@ vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
     require("searcho.core.search_highlight").disable()
 
     local window_id = vim.api.nvim_get_current_win()
-    if _original_cursor then
-      vim.schedule(function()
-        vim.api.nvim_win_set_cursor(window_id, _original_cursor)
-        _original_cursor = nil
-      end)
-    end
+    vim.schedule(function()
+      if not (_original_cursor and vim.api.nvim_win_is_valid(window_id)) then
+        return
+      end
+
+      local bufnr = vim.api.nvim_win_get_buf(window_id)
+      local count = vim.api.nvim_buf_line_count(bufnr)
+      if count < _original_cursor[1] then
+        return
+      end
+
+      vim.api.nvim_win_set_cursor(window_id, _original_cursor)
+      _original_cursor = nil
+    end)
   end),
 })
 
