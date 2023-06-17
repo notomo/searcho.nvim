@@ -24,30 +24,36 @@ vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
   end),
 })
 
-function M.word(typ)
+function M.word_forward()
   _original_cursor = vim.api.nvim_win_get_cursor(0)
 
   local word = vim.fn.expand("<cword>")
   if word ~= "" then
-    local adjust_command = ({
-      forward = "*Nh",
-      backward = "#Ne",
-    })[typ]
     require("searcho.lib.view").with_restore(function()
-      vim.cmd.normal({ args = { adjust_command }, bang = true, mods = { keepjumps = true } })
+      vim.cmd.normal({ args = { "*Nh" }, bang = true, mods = { keepjumps = true } })
     end)
   end
 
-  local search_command = ({
-    forward = "/",
-    backward = "?",
-  })[typ]
-
+  local search_command = "/"
   local cursor = vim.api.nvim_win_get_cursor(0)
-  if typ == "forward" and cursor[1] == 1 and cursor[2] == 0 then
+  if cursor[1] == 1 and cursor[2] == 0 then
     search_command = search_command .. vim.keycode("<C-t>")
   end
 
+  vim.api.nvim_feedkeys(search_command .. word, "t", true)
+end
+
+function M.word_backward()
+  _original_cursor = vim.api.nvim_win_get_cursor(0)
+
+  local word = vim.fn.expand("<cword>")
+  if word ~= "" then
+    require("searcho.lib.view").with_restore(function()
+      vim.cmd.normal({ args = { "#Ne" }, bang = true, mods = { keepjumps = true } })
+    end)
+  end
+
+  local search_command = "?"
   vim.api.nvim_feedkeys(search_command .. word, "t", true)
 end
 

@@ -5,11 +5,11 @@ function searcho.setup_keymaps(keymap_func)
 end
 
 function searcho.word_forward()
-  require("searcho.command").word("forward")
+  require("searcho.command").word_forward()
 end
 
 function searcho.word_backward()
-  require("searcho.command").word("backward")
+  require("searcho.command").word_backward()
 end
 
 function searcho.normal(cmd)
