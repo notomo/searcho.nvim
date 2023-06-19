@@ -6,7 +6,10 @@ function M.with_cleanup()
   local cleanup_targets = {}
   local cleanup = function()
     for _, keymap in ipairs(cleanup_targets) do
-      original_vim.keymap.del(keymap.modes, keymap.lhs, keymap.opts)
+      local ok, err = pcall(original_vim.keymap.del, keymap.modes, keymap.lhs, keymap.opts)
+      if not ok and not err:match("E31: No such mapping") then
+        error(err)
+      end
     end
   end
 
