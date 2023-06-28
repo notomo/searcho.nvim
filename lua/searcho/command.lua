@@ -33,53 +33,23 @@ vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
 })
 
 local default_word_opts = {
-  convert = function(word)
-    return word
-  end,
+  char_pattern = [[\k]],
 }
 local to_word_opts = function(raw_opts)
   raw_opts = raw_opts or {}
   return vim.tbl_deep_extend("force", default_word_opts, raw_opts)
 end
 
-function M.word_forward(raw_opts)
+function M.forward(raw_opts)
   local opts = to_word_opts(raw_opts)
-
   _original_cursor = vim.api.nvim_win_get_cursor(0)
-
-  local word = vim.fn.expand("<cword>")
-  if word ~= "" then
-    require("searcho.lib.view").with_restore(function()
-      vim.cmd.normal({ args = { "*Nh" }, bang = true, mods = { keepjumps = true } })
-
-      local cursor = vim.api.nvim_win_get_cursor(0)
-      if cursor[1] == 1 and cursor[2] == 0 then
-        vim.cmd.normal({ args = { "G$" }, bang = true, mods = { keepjumps = true } })
-      end
-    end)
-  end
-
-  vim.api.nvim_feedkeys("/" .. opts.convert(word), "t", true)
+  return require("searcho.core.search_target").forward_command(_original_cursor, opts.char_pattern)
 end
 
-function M.word_backward(raw_opts)
+function M.backward(raw_opts)
   local opts = to_word_opts(raw_opts)
-
   _original_cursor = vim.api.nvim_win_get_cursor(0)
-
-  local word = vim.fn.expand("<cword>")
-  if word ~= "" then
-    require("searcho.lib.view").with_restore(function()
-      vim.cmd.normal({ args = { "#Ne" }, bang = true, mods = { keepjumps = true } })
-
-      local last_row = vim.api.nvim_buf_line_count(0)
-      if _original_cursor[1] == last_row and _original_cursor[2] == vim.fn.col("$") - 2 then
-        vim.cmd.normal({ args = { "gg0" }, bang = true, mods = { keepjumps = true } })
-      end
-    end)
-  end
-
-  vim.api.nvim_feedkeys("?" .. opts.convert(word), "t", true)
+  return require("searcho.core.search_target").backward_command(_original_cursor, opts.char_pattern)
 end
 
 function M.normal(cmd)

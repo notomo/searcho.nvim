@@ -1,11 +1,11 @@
 local helper = require("searcho.test.helper")
 local searcho = helper.require("searcho")
 
-describe("searcho.word_forward()", function()
+describe("searcho.forward()", function()
   before_each(helper.before_each)
   after_each(helper.after_each)
 
-  it("stays in the cursor word, then start forward search", function()
+  it("can stay in the cursor word, then start forward search", function()
     helper.set_lines([[
  target 1
 
@@ -15,8 +15,10 @@ target 3
 ]])
     vim.cmd.normal({ args = { "l" }, bang = true })
 
-    searcho.word_forward()
-    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+    helper.execute_as_expr(function()
+      local word = vim.fn.expand("<cword>")
+      return searcho.forward() .. word .. vim.keycode("<CR>")
+    end)
 
     assert.current_line(" target 1")
 
@@ -25,7 +27,7 @@ target 3
     assert.current_line("target 2")
   end)
 
-  it("stays in the cursor word even if cursor is in the top of the buffer", function()
+  it("can stay in the cursor word even if cursor is in the top of the buffer", function()
     helper.set_lines([[
 target 1
 
@@ -35,8 +37,10 @@ target 3
 ]])
     vim.cmd.normal({ args = { "l" }, bang = true })
 
-    searcho.word_forward()
-    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+    helper.execute_as_expr(function()
+      local word = vim.fn.expand("<cword>")
+      return searcho.forward() .. word .. vim.keycode("<CR>")
+    end)
 
     assert.current_line("target 1")
 
@@ -44,40 +48,13 @@ target 3
 
     assert.current_line("target 2")
   end)
-
-  it("can use with empty", function()
-    vim.fn.setreg("/", ".*")
-    searcho.word_forward()
-    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
-  end)
-
-  it("can convert search pattern", function()
-    helper.set_lines([[
-target 1
-
-target2
-
-target 3
-]])
-
-    searcho.word_forward({
-      convert = function(word)
-        return "\\v<" .. word .. ">"
-      end,
-    })
-    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
-
-    vim.cmd.normal({ args = { "n" }, bang = true })
-
-    assert.current_line("target 3")
-  end)
 end)
 
-describe("searcho.backward_word()", function()
+describe("searcho.backward()", function()
   before_each(helper.before_each)
   after_each(helper.after_each)
 
-  it("stays in the cursor word, then start backward search", function()
+  it("can stay in the cursor word, then start backward search", function()
     helper.set_lines([[
 target 1
 
@@ -86,8 +63,10 @@ target 2
 target 3
 ]])
 
-    searcho.word_backward()
-    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+    helper.execute_as_expr(function()
+      local word = vim.fn.expand("<cword>")
+      return searcho.backward() .. word .. vim.keycode("<CR>")
+    end)
 
     assert.current_line("target 1")
 
@@ -96,7 +75,7 @@ target 3
     assert.current_line("target 2")
   end)
 
-  it("stays in the cursor word even if cursor is in the bottom of the buffer", function()
+  it("can stay in the cursor word even if cursor is in the bottom of the buffer", function()
     helper.set_lines([[
 1 target
 
@@ -105,41 +84,16 @@ target 3
 3 target]])
     vim.cmd.normal({ args = { "G$" }, bang = true })
 
-    searcho.word_backward()
-    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
+    helper.execute_as_expr(function()
+      local word = vim.fn.expand("<cword>")
+      return searcho.backward() .. word .. vim.keycode("<CR>")
+    end)
 
     assert.current_line("3 target")
 
     vim.cmd.normal({ args = { "n" }, bang = true })
 
     assert.current_line("2 target")
-  end)
-
-  it("can use with empty", function()
-    vim.fn.setreg("/", ".*")
-    searcho.word_forward()
-    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
-  end)
-
-  it("can convert search pattern", function()
-    helper.set_lines([[
-target 1
-
-target2
-
-target 3]])
-    vim.cmd.normal({ args = { "G" }, bang = true })
-
-    searcho.word_backward({
-      convert = function(word)
-        return "\\v<" .. word .. ">"
-      end,
-    })
-    vim.api.nvim_feedkeys(vim.keycode("<CR>"), "ntx", true)
-
-    vim.cmd.normal({ args = { "n" }, bang = true })
-
-    assert.current_line("target 1")
   end)
 end)
 
@@ -155,12 +109,9 @@ target2
 ]])
     vim.fn.setreg("/", "target")
 
-    local key = "n"
-    vim.keymap.set("n", key, function()
+    helper.execute_as_expr(function()
       return searcho.normal("n")
-    end, { buffer = true, expr = true })
-    searcho.normal("n")
-    vim.api.nvim_feedkeys(key, "tx", true)
+    end)
     helper.cursor_moved()
 
     assert.current_line("target1")
@@ -183,7 +134,8 @@ target
       end, { buffer = true })
     end)
 
-    searcho.word_forward()
+    vim.api.nvim_feedkeys("/", "t", true)
+
     vim.api.nvim_feedkeys(vim.keycode("<Space>"), "tx", true)
 
     vim.api.nvim_feedkeys(vim.keycode(":<Space>"), "tx", true)

@@ -4,12 +4,12 @@ function searcho.setup_keymaps(keymap_func)
   return require("searcho.command").setup_keymaps(keymap_func)
 end
 
-function searcho.word_forward(opts)
-  require("searcho.command").word_forward(opts)
+function searcho.forward(opts)
+  return require("searcho.command").forward(opts)
 end
 
-function searcho.word_backward(opts)
-  require("searcho.command").word_backward(opts)
+function searcho.backward(opts)
+  return require("searcho.command").backward(opts)
 end
 
 function searcho.normal(cmd)
