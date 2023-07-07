@@ -7,6 +7,9 @@ vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
   group = vim.api.nvim_create_augroup("searcho", {}),
   pattern = { "*" },
   callback = for_search(function()
+    local cursor = _original_cursor
+    _original_cursor = nil
+
     if not vim.v.event.abort then
       require("searcho.core.search_highlight").disable_on_next_moved()
       return
@@ -16,18 +19,17 @@ vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
 
     local window_id = vim.api.nvim_get_current_win()
     vim.schedule(function()
-      if not (_original_cursor and vim.api.nvim_win_is_valid(window_id)) then
+      if not (cursor and vim.api.nvim_win_is_valid(window_id)) then
         return
       end
 
       local bufnr = vim.api.nvim_win_get_buf(window_id)
       local count = vim.api.nvim_buf_line_count(bufnr)
-      if count < _original_cursor[1] then
+      if count < cursor[1] then
         return
       end
 
-      vim.api.nvim_win_set_cursor(window_id, _original_cursor)
-      _original_cursor = nil
+      vim.api.nvim_win_set_cursor(window_id, cursor)
     end)
   end),
 })
