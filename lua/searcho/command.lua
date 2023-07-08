@@ -34,22 +34,22 @@ vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
   end),
 })
 
-local default_word_opts = {
+local default_opts = {
   char_pattern = [[\k]],
 }
-local to_word_opts = function(raw_opts)
+local to_opts = function(raw_opts)
   raw_opts = raw_opts or {}
-  return vim.tbl_deep_extend("force", default_word_opts, raw_opts)
+  return vim.tbl_deep_extend("force", default_opts, raw_opts)
 end
 
 function M.forward(raw_opts)
-  local opts = to_word_opts(raw_opts)
+  local opts = to_opts(raw_opts)
   _original_cursor = vim.api.nvim_win_get_cursor(0)
   return require("searcho.core.search_target").forward_command(_original_cursor, opts.char_pattern)
 end
 
 function M.backward(raw_opts)
-  local opts = to_word_opts(raw_opts)
+  local opts = to_opts(raw_opts)
   _original_cursor = vim.api.nvim_win_get_cursor(0)
   return require("searcho.core.search_target").backward_command(_original_cursor, opts.char_pattern)
 end
