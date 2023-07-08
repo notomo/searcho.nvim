@@ -1,0 +1,72 @@
+*searcho.nvim.txt*
+
+==============================================================================
+Lua module: searcho                                     *searcho.nvim-searcho*
+
+setup_keymaps({keymap_func})                         *searcho.setup_keymaps()*
+  Setup keymap for command-line mode that type is search.
+
+  Parameters: ~
+    {keymap_func} (fun(vim:table)) set keymap function. (The argument is patched vim object)
+
+forward({opts})                                            *searcho.forward()*
+  Returns a command to start searching forward.
+
+  Parameters: ~
+    {opts} (SearchoOption?) |SearchoOption|
+
+  Return: ~
+    (string) command to use expr mapping
+
+backward({opts})                                          *searcho.backward()*
+  Returns a command to start searching backward.
+
+  Parameters: ~
+    {opts} (SearchoOption?) |SearchoOption|
+
+  Return: ~
+    (string) command to use expr mapping
+
+normal()                                                    *searcho.normal()*
+  Returns a command with the following side-effect.
+  - Disable search highlight on next cursor moved.
+
+  Return: ~
+    (string) command to use expr mapping
+
+==============================================================================
+STRUCTURE                                             *searcho.nvim-STRUCTURE*
+
+SearchoOption                                                  *SearchoOption*
+
+- {char_pattern} (string?) (default = "\k")
+
+==============================================================================
+EXAMPLES                                               *searcho.nvim-EXAMPLES*
+
+>lua
+  vim.keymap.set({ "n", "x" }, "*", function()
+    local pattern = [[\v]] .. vim.fn.expand("<cword>")
+    return require("searcho").forward() .. pattern
+  end, { expr = true })
+  vim.keymap.set({ "n", "x" }, "#", function()
+    local pattern = [[\v]] .. vim.fn.expand("<cword>")
+    return require("searcho").backward() .. pattern
+  end, { expr = true })
+
+  vim.keymap.set({ "n", "x" }, "n", function()
+    return require("searcho").normal("n")
+  end, { expr = true })
+  vim.keymap.set({ "n", "x" }, "N", function()
+    return require("searcho").normal("N")
+  end, { expr = true })
+
+  require("searcho").setup_keymaps(function(vim)
+    vim.keymap.set("c", "<Tab>", [[<C-g>]], { buffer = true })
+    vim.keymap.set("c", "<S-Tab>", [[<C-t>]], { buffer = true })
+    vim.keymap.set("c", "<Space>", [[<CR>]], { buffer = true })
+  end)
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help
