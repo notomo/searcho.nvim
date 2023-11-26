@@ -44,6 +44,11 @@ local gen_readme = function()
   local content = ([[
 # %s
 
+search with the following effects
+
+- disable highlight on move
+- restore cursor position on cmdline leaved
+
 ## Example
 
 ```lua
