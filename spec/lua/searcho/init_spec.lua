@@ -1,5 +1,6 @@
 local helper = require("searcho.test.helper")
 local searcho = helper.require("searcho")
+local assert = require("assertlib").typed(assert)
 
 describe("searcho.forward()", function()
   before_each(helper.before_each)
