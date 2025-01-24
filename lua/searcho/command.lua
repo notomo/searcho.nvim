@@ -4,7 +4,7 @@ local for_search = require("searcho.lib.autocmd").for_search
 
 local _original_cursor
 vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
-  group = vim.api.nvim_create_augroup("searcho", {}),
+  group = vim.api.nvim_create_augroup("searcho.leave", {}),
   pattern = { "*" },
   callback = for_search(function()
     local cursor = _original_cursor
@@ -60,7 +60,7 @@ function M.normal(cmd)
 end
 
 function M.setup_keymaps(keymap_func)
-  local group = vim.api.nvim_create_augroup("searcho_keymap", {})
+  local group = vim.api.nvim_create_augroup("searcho.keymap", {})
   local cleanup_keymaps = function() end
 
   vim.api.nvim_create_autocmd({ "CmdlineEnter" }, {

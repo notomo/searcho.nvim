@@ -6,7 +6,7 @@ function M.disable()
   end)
 end
 
-local group = vim.api.nvim_create_augroup("searcho_search_highlight", {})
+local group = vim.api.nvim_create_augroup("searcho.search_highlight", {})
 
 function M.disable_on_next_moved()
   vim.api.nvim_clear_autocmds({ group = group })
