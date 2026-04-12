@@ -26,7 +26,7 @@ end
 
 function helper.execute_as_expr(fn)
   local key = "n"
-  vim.keymap.set("n", key, fn, { buffer = true, expr = true })
+  vim.keymap.set("n", key, fn, { buf = 0, expr = true })
   vim.api.nvim_feedkeys(key, "tx", true)
 end
 

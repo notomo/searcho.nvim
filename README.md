@@ -25,8 +25,8 @@ vim.keymap.set({ "n", "x" }, "N", function()
 end, { expr = true })
 
 require("searcho").setup_keymaps(function(vim)
-  vim.keymap.set("c", "<Tab>", [[<C-g>]], { buffer = true })
-  vim.keymap.set("c", "<S-Tab>", [[<C-t>]], { buffer = true })
-  vim.keymap.set("c", "<Space>", [[<CR>]], { buffer = true })
+  vim.keymap.set("c", "<Tab>", [[<C-g>]], { buf = 0 })
+  vim.keymap.set("c", "<S-Tab>", [[<C-t>]], { buf = 0 })
+  vim.keymap.set("c", "<Space>", [[<CR>]], { buf = 0 })
 end)
 ```

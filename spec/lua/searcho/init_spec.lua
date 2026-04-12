@@ -132,7 +132,7 @@ target
     searcho.setup_keymaps(function(vim)
       vim.keymap.set("c", "<Space>", function()
         count = count + 1
-      end, { buffer = true })
+      end, { buf = 0 })
     end)
 
     vim.api.nvim_feedkeys("/", "t", true)
