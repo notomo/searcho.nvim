@@ -2,13 +2,17 @@ local helper = require("ntf.helper")
 local plugin_name = helper.get_module_root(...)
 
 helper.root = helper.find_plugin_root(plugin_name)
-vim.opt.packpath:prepend(vim.env.TESTPACK_PACKPATH or vim.fs.joinpath(helper.root, "spec/.shared/packages"))
+vim.api.nvim_set_option_value(
+  "packpath",
+  vim.env.TESTPACK_PACKPATH or vim.fs.joinpath(helper.root, "spec/.shared/packages"),
+  { operation = "prepend" }
+)
 require("assertlib").register(require("ntf.assert").register)
 
 function helper.before_each()
   -- to suppress search messages in test output
-  vim.opt.shortmess:append("S")
-  vim.opt.shortmess:append("s")
+  vim.api.nvim_set_option_value("shortmess", "S", { operation = "append" })
+  vim.api.nvim_set_option_value("shortmess", "s", { operation = "append" })
 end
 
 function helper.after_each() end
